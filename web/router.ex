@@ -1,6 +1,6 @@
 defmodule MasakiStackoverflow.Router do
   use SolomonLib.Router
 
-  get "/hello", Hello, :hello
-  get "/hello2", Hello2, :hello2
+  get  "/question", Question, :index
+  post "/question", Question, :create
 end

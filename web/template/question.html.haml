@@ -1,0 +1,21 @@
+%form#questionForm{action: "/question" method: "post"}
+  %div
+    %p ユーザー名
+    %input{name: "author" required}
+  %div
+    %p タイトル
+    %input{name: "title" required}
+  %div
+    %p 本文
+    %input{name: "body" required}
+  %div
+    %input{type: "submit"}
+
+- for %{"data" => %{"title" => title , "author" => author, "body" => body}} <- questions do
+  %div{style: "background-color: #cff; padding: 20px; margin: 20px; border-radius: 20px;"}
+    %div{style: "font-size: 150%" float: "left"}
+      = "Q: " <> title
+    %div{style: "font-size: 60%" float: "left"}
+      = "投稿者: " <> author
+    %div
+      = body
