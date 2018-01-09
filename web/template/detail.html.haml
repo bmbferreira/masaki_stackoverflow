@@ -15,7 +15,7 @@
     = "Answer"
   %button{type="button" class="create-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name="comments"}
     = "Comment"
-  %button{type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete-modal"}
+  %button{type="button" class="delete-button btn btn-danger" data-toggle="modal" data-target="#delete-modal"}
     = "Delete"
 - for %{"index" => comment_index, "author" => author, "body" => body, "visible" => visible} <- comments do
   - if visible do
