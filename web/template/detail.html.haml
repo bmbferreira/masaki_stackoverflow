@@ -7,6 +7,8 @@
     = "Question by " <> author
   %div.body
     = body
+  %button{type="button" class="create-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name="answers"}
+    = "Answer"
 - for %{"author" => author, "body" => body} <- comments do
   %div.comment
     %div.author
@@ -25,3 +27,43 @@
         = "Comment by " <> author
       %div.body
         = body
+%form#update-form{action="/v1/question/#{question_id}" method="PUT"}
+  %input#operator{ type="hidden" name="operator" value="temp" }
+  %input#key{ type="hidden" name="key" value="temp" }
+  %div#update-modal{class="modal fade" tabid="-1"}
+    %div{class="modal-dialog"}
+      %div{class="modal-content"}
+        %div{class="modal-header"}
+          %h5{class="modal-title"}
+            = "Edit"
+          %button{type="button" class="close" data-dismiss="modal" aria-label="Close"}
+            %span{aria-hidden="true"}
+              = "X"
+        %div{class="modal-body"}
+          %div{class="form-group"}
+            %input#value{class="form-control" name="value" value="" rows="10" required}
+        %div{class="modal-footer"}
+          %button#submit{type="submit" class="submit btn btn-primary"}
+            = "Confirm"
+          %button{type="cancel" class="btn btn-secondary" data-dismiss="modal"}
+            = "Close"
+%script
+  $('.create-button').click(function(){
+    $('#operator').val('$push');
+    $('#key').val('answers');
+    $('#value').val('');
+    $('#value').attr('hidden', false);
+    $('.modal-title').text($(this).text());
+  });
+  $('#update-form').submit(function(event) {
+    event.preventDefault();
+    $.ajax({
+      url: '/v1'+location.pathname,
+      type: 'PUT',
+      data: $('#update-form').serialize(),
+      timeout: 10000,
+      success: function(response){
+        window.location.reload();
+      }
+    });
+  });
