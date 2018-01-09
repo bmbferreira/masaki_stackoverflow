@@ -18,7 +18,7 @@ defmodule MasakiStackoverflow.Controller.Question do
     request = Dodai.RetrieveDedicatedDataEntityRequest.new(group_id, "question", question_id, root_key)
     %Dodai.RetrieveDedicatedDataEntitySuccess{body: question} = Sazabi.G2gClient.send(context, app_id, request)
     comments = question["data"]["comments"]
-    answers = question["data"]["answers"]
+    answers = question["data"]["answers"] |> Enum.with_index() |> Enum.map(fn{map, index} -> Map.put(map, "index", index) end)
 
     render(conn, 200, "detail", [
       question_id: question["_id"],
