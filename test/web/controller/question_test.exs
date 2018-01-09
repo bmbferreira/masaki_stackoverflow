@@ -24,7 +24,6 @@ defmodule MasakiStackoverflow.Controller.QuestionTest do
       }
     ]
   }
-
   @show_success_res_body %Dodai.RetrieveDedicatedDataEntitySuccess{
     status_code: 200,
     body: %{
