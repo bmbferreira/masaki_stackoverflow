@@ -25,14 +25,14 @@ defmodule MasakiStackoverflow.Controller.V1.Question do
       query   = %Dodai.CreateDedicatedDataEntityRequestBody{data: Map.from_struct(validated_params)}
       request = Dodai.CreateDedicatedDataEntityRequest.new(group_id, @collection_name, root_key, query)
       %Dodai.CreateDedicatedDataEntitySuccess{} = Sazabi.G2gClient.send(context, app_id, request)
-      redirect(conn2, "/question")
+      json(conn2, 201, %{})
     end)
   end
 
   defp validate_params(conn, params, func) do
     case MasakiStackoverflow.CreateQuestionBody.new(params) do
       {:ok   , validated} -> func.(conn, validated)
-      {:error, _        } -> redirect(conn, "/question")
+      {:error, _        } -> json(conn, 403, [])
     end
   end
 end
