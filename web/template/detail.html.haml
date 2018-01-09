@@ -1,0 +1,27 @@
+%title
+  = "Question Detail - Stack Overflow Clone"
+%div.question
+  %div.title
+    = title
+  %div.author
+    = "Question by " <> author
+  %div.body
+    = body
+- for %{"author" => author, "body" => body} <- comments do
+  %div.comment
+    %div.author
+      = "Comment by " <> author
+    %div.body
+      = body
+- for %{"author" => author, "body" => body, "comments" => answer_comments} <- answers do
+  %div.answer
+    %div.author
+      = "Answer by " <> author
+    %div.body
+      = body
+  - for %{"author" => author, "body" => body} <- answer_comments do
+    %div.comment
+      %div.author
+        = "Comment by " <> author
+      %div.body
+        = body

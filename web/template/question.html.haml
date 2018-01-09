@@ -1,13 +1,14 @@
 %button{type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal"}
   = "Ask a Question"
-- for %{"data" => %{"title" => title , "author" => author, "body" => body}} <- questions do
+- for %{"_id" => id, "data" => %{"title" => title , "author" => author, "body" => body}} <- questions do
   %div.question
-    %p.title
-      = "Q: " <> title
-    %p.author
-      = "投稿者: " <> author
-    %p.body
-      = body
+    %a{href : "/question/#{id}"}
+      %p.title
+        = "Q: " <> title
+      %p.author
+        = "投稿者: " <> author
+      %p.body
+        = body
 %form{action="/v1/question" method="POST"}
   %div#modal{class="modal fade" tabindex="-1" role="dialog"}
     %div{class="modal-dialog" role="document"}
@@ -38,7 +39,7 @@
       timeout: 10000,
       success: function(response){
         console.log(response);
-        window.location.href='/question';
+        window.location.href='/question/'+response.id;
       }
     });
   });

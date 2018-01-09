@@ -47,8 +47,8 @@ defmodule MasakiStackoverflow.Controller.V1.Question do
     validate_question_body(conn1, question_body, fn conn2, validated_question_body ->
       query   = %Dodai.CreateDedicatedDataEntityRequestBody{data: Map.from_struct(validated_question_body)}
       request = Dodai.CreateDedicatedDataEntityRequest.new(group_id, @collection_name, root_key, query)
-      %Dodai.CreateDedicatedDataEntitySuccess{} = Sazabi.G2gClient.send(context, app_id, request)
-      json(conn2, 201, %{})
+      %Dodai.CreateDedicatedDataEntitySuccess{body: body} = Sazabi.G2gClient.send(context, app_id, request)
+      json(conn2, 201, %{"id" => body["_id"]})
     end)
   end
 

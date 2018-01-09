@@ -13,7 +13,7 @@ defmodule MasakiStackoverflow.Controller.V1.QuestionTest do
   test "create should return 201, if valid values were sent" do
     :meck.expect(Sazabi.G2gClient, :send, fn _conn, _app_id, request ->
       assert %Dodai.CreateDedicatedDataEntityRequest{body: %Dodai.CreateDedicatedDataEntityRequestBody{}} = request
-      Dodai.CreateDedicatedDataEntitySuccess.new(201, [], "")
+      Dodai.CreateDedicatedDataEntitySuccess.new(201, %{}, %{id: "new-id"})
     end)
     assert Req.post_json("/v1/question/", @create_input).status == 201
   end
