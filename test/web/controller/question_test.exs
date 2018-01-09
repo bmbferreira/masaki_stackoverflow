@@ -11,7 +11,7 @@ defmodule MasakiStackoverflow.Controller.QuestionTest do
         "updatedAt" => "2017-12-01T01:00:00+00:00",
         "sections"  => [],
         "version"   => 0,
-        "data"      => %{"title" => "title123", "author" => "user456", "body" => "body789"},
+        "data"      => %{"title" => "title123", "author" => "user456", "body" => "body789", "answers" => [], "comments" => []}
       },
       %{
         "_id"       => "5a2f64f33900003900070025",
@@ -20,7 +20,7 @@ defmodule MasakiStackoverflow.Controller.QuestionTest do
         "updatedAt" => "2017-12-01T01:00:01+00:00",
         "sections"  => [],
         "version"   => 0,
-        "data"      => %{"title" => "TITLE124", "author" => "USER248", "body" => "BODY4816"},
+        "data"      => %{"title" => "TITLE124", "author" => "USER248", "body" => "BODY4816", "answers" => [], "comments" => []}
       }
     ]
   }
@@ -35,10 +35,9 @@ defmodule MasakiStackoverflow.Controller.QuestionTest do
     body = response.body
     assert String.starts_with?(body, "<!DOCTYPE html>")
     Enum.each(@success_res_body.body, fn %{"data" => data} ->
-      Map.values(data)
-      |> Enum.each(fn value ->
-        assert String.contains?(body, value)
-      end)
+      assert String.contains?(body, data["title"])
+      assert String.contains?(body, data["author"])
+      assert String.contains?(body, data["body"])
     end)
   end
 end

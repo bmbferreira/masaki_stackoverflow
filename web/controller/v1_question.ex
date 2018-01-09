@@ -1,7 +1,27 @@
 use Croma
+import Croma.TypeGen
 
 defmodule MasakiStackoverflow.NonEmptyString do
   use Croma.SubtypeOfString, pattern: ~r/.+/
+end
+
+defmodule MasakiStackoverflow.CreateCommentBody do
+  use Croma.Struct, fields: [
+    _id:     MasakiStackoverflow.NonEmptyString,
+    author:  MasakiStackoverflow.NonEmptyString,
+    body:    MasakiStackoverflow.NonEmptyString
+  ],
+  recursive_new?: true
+end
+
+defmodule MasakiStackoverflow.CreateAnswerBody do
+  use Croma.Struct, fields: [
+    _id:    MasakiStackoverflow.NonEmptyString,
+    author: MasakiStackoverflow.NonEmptyString,
+    body:   MasakiStackoverflow.NonEmptyString,
+    comments: list_of(MasakiStackoverflow.CreateCommentBody)
+  ],
+  recursive_new?: true
 end
 
 defmodule MasakiStackoverflow.CreateQuestionBody do
@@ -9,6 +29,8 @@ defmodule MasakiStackoverflow.CreateQuestionBody do
     title:  MasakiStackoverflow.NonEmptyString,
     author: MasakiStackoverflow.NonEmptyString,
     body:   MasakiStackoverflow.NonEmptyString,
+    answers: list_of(MasakiStackoverflow.CreateAnswerBody),
+    comments: list_of(MasakiStackoverflow.CreateCommentBody)
   ],
   recursive_new?: true
 end
@@ -19,17 +41,18 @@ defmodule MasakiStackoverflow.Controller.V1.Question do
 
   @collection_name "question"
 
-  def create(%Conn{request: %Request{body: params}, context: context} = conn1) do
+  def create(%Conn{request: %Request{body: question_body}, context: context} = conn1) do
     %{"app_id" => app_id, "group_id" => group_id, "root_key" => root_key} = MasakiStackoverflow.get_all_env()
-    validate_params(conn1, params, fn conn2, validated_params ->
-      query   = %Dodai.CreateDedicatedDataEntityRequestBody{data: Map.from_struct(validated_params)}
+    question_body = question_body |> Map.put("answers", []) |> Map.put("comments", [])
+    validate_question_body(conn1, question_body, fn conn2, validated_question_body ->
+      query   = %Dodai.CreateDedicatedDataEntityRequestBody{data: Map.from_struct(validated_question_body)}
       request = Dodai.CreateDedicatedDataEntityRequest.new(group_id, @collection_name, root_key, query)
       %Dodai.CreateDedicatedDataEntitySuccess{} = Sazabi.G2gClient.send(context, app_id, request)
       json(conn2, 201, %{})
     end)
   end
 
-  defp validate_params(conn, params, func) do
+  defp validate_question_body(conn, params, func) do
     case MasakiStackoverflow.CreateQuestionBody.new(params) do
       {:ok   , validated} -> func.(conn, validated)
       {:error, _        } -> json(conn, 403, [])
