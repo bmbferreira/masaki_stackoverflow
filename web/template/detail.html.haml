@@ -92,14 +92,14 @@
             = "Close"
 %script
   $('.create-button').click(function(){
-    $('#operator').val('$push');
+    $('#operator').val('create');
     $('#key').val($(this).attr('data-name'));
     $('#value').val('');
     $('#value').attr('hidden', false);
     $('.modal-title').text($(this).text());
   });
   $('.update-button').click(function(){
-    $('#operator').val('$set');
+    $('#operator').val('update');
     $('#key').val($(this).attr('data-name'));
     $('#value').val($(this).prev().text().trim());
     $('#value').attr('hidden', false);

@@ -3,14 +3,14 @@ defmodule MasakiStackoverflow.Controller.V1.QuestionTest do
 
   @create_input %{"title" => "title987", "author" => "author765", "body" => "body432"}
   @update_input [
-    %{"operator" => "$push", "key" => "comments",                  "value" => "created-comment-123"},
-    %{"operator" => "$push", "key" => "answers",                   "value" => "created-answer-234"},
-    %{"operator" => "$push", "key" => "answers.0.comments",        "value" => "created-comment-345"},
-    %{"operator" => "$set",  "key" => "title",                     "value" => "updated-title-456"},
-    %{"operator" => "$set",  "key" => "body",                      "value" => "updated-body-567"},
-    %{"operator" => "$set",  "key" => "comments.0.body",           "value" => "updated-comment-678"},
-    %{"operator" => "$set",  "key" => "answers.0.body",            "value" => "updated-answer-789"},
-    %{"operator" => "$set",  "key" => "answers.0.comments.0.body", "value" => "updated-comment-890"}
+    %{"operator" => "create", "key" => "comments",                  "value" => "created-comment-123"},
+    %{"operator" => "create", "key" => "answers",                   "value" => "created-answer-234"},
+    %{"operator" => "create", "key" => "answers.0.comments",        "value" => "created-comment-345"},
+    %{"operator" => "update",  "key" => "title",                     "value" => "updated-title-456"},
+    %{"operator" => "update",  "key" => "body",                      "value" => "updated-body-567"},
+    %{"operator" => "update",  "key" => "comments.0.body",           "value" => "updated-comment-678"},
+    %{"operator" => "update",  "key" => "answers.0.body",            "value" => "updated-answer-789"},
+    %{"operator" => "update",  "key" => "answers.0.comments.0.body", "value" => "updated-comment-890"}
   ]
 
   @success_res_body %Dodai.UpdateDedicatedDataEntitySuccess{

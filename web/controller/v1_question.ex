@@ -65,23 +65,23 @@ defmodule MasakiStackoverflow.Controller.V1.Question do
     question_id = conn.request.path_matches.id
     %{"app_id" => app_id, "group_id" => group_id, "root_key" => root_key} = MasakiStackoverflow.get_all_env()
     case input do
-      %{"operator" => "$push", "key" => "answers"} ->
+      %{"operator" => "create", "key" => "answers"} ->
         answer_body = %{"_id" => set_id(), "author" => get_author(), "body" => input["value"], "comments" => [], "visible" => :true}
         query = %{"$push" => %{input["key"] => answer_body}}
         body = %Dodai.UpdateDedicatedDataEntityRequestBody{data: query}
         request = Dodai.UpdateDedicatedDataEntityRequest.new(group_id, @collection_name, question_id, root_key, body)
         %Dodai.UpdateDedicatedDataEntitySuccess{} = Sazabi.G2gClient.send(context, app_id, request)
         json(conn, 200, [])
-      %{"operator" => "$push"} ->
+      %{"operator" => "create"} ->
         comment_body = %{"_id" => set_id(), "author" => get_author(), "body" => input["value"], "visible" => :true}
         query = %{"$push" => %{input["key"] => comment_body}}
         body = %Dodai.UpdateDedicatedDataEntityRequestBody{data: query}
         request = Dodai.UpdateDedicatedDataEntityRequest.new(group_id, @collection_name, question_id, root_key, body)
         %Dodai.UpdateDedicatedDataEntitySuccess{} = Sazabi.G2gClient.send(context, app_id, request)
         json(conn, 200, [])
-      %{"operator" => "$set", "value" => ""} ->
+      %{"operator" => "update", "value" => ""} ->
         json(conn, 403, [])
-      %{"operator" => "$set"} ->
+      %{"operator" => "update"} ->
         query = %{"$set" => %{input["key"] => input["value"]}}
         body = %Dodai.UpdateDedicatedDataEntityRequestBody{data: query}
         request = Dodai.UpdateDedicatedDataEntityRequest.new(group_id, @collection_name, question_id, root_key, body)
