@@ -61,39 +61,57 @@ defmodule MasakiStackoverflow.Controller.V1.Question do
     end
   end
 
-  def update(%Conn{request: %Request{body: input}, context: context} = conn) do
-    question_id = conn.request.path_matches.id
+  def update(%Conn{request: %Request{body: input}, context: context} = conn1) do
+    question_id = conn1.request.path_matches.id
     %{"app_id" => app_id, "group_id" => group_id, "root_key" => root_key} = MasakiStackoverflow.get_all_env()
     case input do
       %{"operator" => "create", "key" => "answers"} ->
         answer_body = %{"_id" => set_id(), "author" => get_author(), "body" => input["value"], "comments" => [], "visible" => :true}
-        query = %{"$push" => %{input["key"] => answer_body}}
-        body = %Dodai.UpdateDedicatedDataEntityRequestBody{data: query}
-        request = Dodai.UpdateDedicatedDataEntityRequest.new(group_id, @collection_name, question_id, root_key, body)
-        %Dodai.UpdateDedicatedDataEntitySuccess{} = Sazabi.G2gClient.send(context, app_id, request)
-        json(conn, 200, [])
+        validate_answer_body(conn1, answer_body, fn conn2, validated_answer_body ->
+          query = %{"$push" => %{input["key"] => validated_answer_body}}
+          body = %Dodai.UpdateDedicatedDataEntityRequestBody{data: query}
+          request = Dodai.UpdateDedicatedDataEntityRequest.new(group_id, @collection_name, question_id, root_key, body)
+          %Dodai.UpdateDedicatedDataEntitySuccess{} = Sazabi.G2gClient.send(context, app_id, request)
+          json(conn2, 200, [])
+        end)
       %{"operator" => "create"} ->
         comment_body = %{"_id" => set_id(), "author" => get_author(), "body" => input["value"], "visible" => :true}
-        query = %{"$push" => %{input["key"] => comment_body}}
-        body = %Dodai.UpdateDedicatedDataEntityRequestBody{data: query}
-        request = Dodai.UpdateDedicatedDataEntityRequest.new(group_id, @collection_name, question_id, root_key, body)
-        %Dodai.UpdateDedicatedDataEntitySuccess{} = Sazabi.G2gClient.send(context, app_id, request)
-        json(conn, 200, [])
+        validate_comment_body(conn1, comment_body, fn conn2, validated_comment_body ->
+          query = %{"$push" => %{input["key"] => validated_comment_body}}
+          body = %Dodai.UpdateDedicatedDataEntityRequestBody{data: query}
+          request = Dodai.UpdateDedicatedDataEntityRequest.new(group_id, @collection_name, question_id, root_key, body)
+          %Dodai.UpdateDedicatedDataEntitySuccess{} = Sazabi.G2gClient.send(context, app_id, request)
+          json(conn2, 200, [])
+        end)
       %{"operator" => "update", "value" => ""} ->
-        json(conn, 403, [])
+        json(conn1, 403, [])
       %{"operator" => "update"} ->
         query = %{"$set" => %{input["key"] => input["value"]}}
         body = %Dodai.UpdateDedicatedDataEntityRequestBody{data: query}
         request = Dodai.UpdateDedicatedDataEntityRequest.new(group_id, @collection_name, question_id, root_key, body)
         %Dodai.UpdateDedicatedDataEntitySuccess{} = Sazabi.G2gClient.send(context, app_id, request)
-        json(conn, 200, [])
+        json(conn1, 200, [])
       %{"operator" => "delete"} ->
         query = %{"$set" => %{input["key"] => :false}}
         body = %Dodai.UpdateDedicatedDataEntityRequestBody{data: query}
         request = Dodai.UpdateDedicatedDataEntityRequest.new(group_id, @collection_name, question_id, root_key, body)
         %Dodai.UpdateDedicatedDataEntitySuccess{} = Sazabi.G2gClient.send(context, app_id, request)
-        json(conn, 200, [])
-      _ -> json(conn, 403, [])
+        json(conn1, 200, [])
+      _ -> json(conn1, 403, [])
+    end
+  end
+
+  defp validate_answer_body(conn, params, func) do
+    case MasakiStackoverflow.CreateAnswerBody.new(params) do
+      {:ok   , validated} -> func.(conn, validated)
+      {:error, _        } -> json(conn, 403, [])
+    end
+  end
+
+  defp validate_comment_body(conn, params, func) do
+    case MasakiStackoverflow.CreateCommentBody.new(params) do
+      {:ok   , validated} -> func.(conn, validated)
+      {:error, _        } -> json(conn, 403, [])
     end
   end
 
