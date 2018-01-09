@@ -9,18 +9,22 @@
     = body
   %button{type="button" class="create-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name="answers"}
     = "Answer"
+  %button{type="button" class="create-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name="comments"}
+    = "Comment"
 - for %{"author" => author, "body" => body} <- comments do
   %div.comment
     %div.author
       = "Comment by " <> author
     %div.body
       = body
-- for %{"author" => author, "body" => body, "comments" => answer_comments} <- answers do
+- for %{"index" => answer_index, "author" => author, "body" => body, "comments" => answer_comments} <- answers do
   %div.answer
     %div.author
       = "Answer by " <> author
     %div.body
       = body
+    %button{type="button" class="create-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name="answers.#{answer_index}.comments"}
+      = "Comment"
   - for %{"author" => author, "body" => body} <- answer_comments do
     %div.comment
       %div.author
@@ -50,7 +54,7 @@
 %script
   $('.create-button').click(function(){
     $('#operator').val('$push');
-    $('#key').val('answers');
+    $('#key').val($(this).attr('data-name'));
     $('#value').val('');
     $('#value').attr('hidden', false);
     $('.modal-title').text($(this).text());
