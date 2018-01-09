@@ -1,7 +1,7 @@
 defmodule MasakiStackoverflow.Controller.QuestionTest do
   use SolomonLib.Test.ControllerTestCase
 
-  @success_res_body %Dodai.RetrieveDedicatedDataEntityListSuccess{
+  @index_success_res_body %Dodai.RetrieveDedicatedDataEntityListSuccess{
     status_code: 200,
     body: [
       %{
@@ -25,19 +25,149 @@ defmodule MasakiStackoverflow.Controller.QuestionTest do
     ]
   }
 
+  @show_success_res_body %Dodai.RetrieveDedicatedDataEntitySuccess{
+    status_code: 200,
+    body: %{
+      "_id"       => "5a430cb23900003900091afe",
+      "owner"     => "_root",
+      "sections"  => [],
+      "createdAt" => "2017-12-27T03:00:02+00:00",
+      "updatedAt" => "2017-12-27T05:55:46+00:00",
+      "version"   => 2,
+      "data"      => %{
+        "title"     => "title1",
+        "body"      => "body1",
+        "author"    => "author1",
+        "answers"   => [
+          %{
+            "_id"      => "author11-2018-01-26T08:47:07.916233Z",
+            "author"   => "author11",
+            "body"     => "body11",
+            "comments" => [
+              %{
+                "_id"    => "author111-2018-02-26T08:47:07.916233Z",
+                "author" => "author111",
+                "body"   => "body111"
+              },
+              %{
+                "_id"    => "author112-2018-03-26T08:47:07.916233Z",
+                "author" => "author112",
+                "body"   => "body112"
+              },
+              %{
+                "_id"    => "author113-2018-04-26T08:47:07.916233Z",
+                "author" => "author113",
+                "body"   => "body113"
+              }
+            ]
+          },
+          %{
+            "_id"      => "author12-2018-05-26T08:47:07.916233Z",
+            "author"   => "author12",
+            "body"     => "body12",
+            "comments" => [
+              %{
+                "_id"    => "author121-2018-06-26T08:47:07.916233Z",
+                "author" => "author121",
+                "body"   => "body121"
+              },
+              %{
+                "_id"    => "author122-2018-07-26T08:47:07.916233Z",
+                "author" => "author122",
+                "body"   => "body122"
+              },
+              %{
+                "_id"    => "author123-2018-08-26T08:47:07.916233Z",
+                "author" => "author123",
+                "body"   => "body123"
+              }
+            ]
+          },
+          %{
+            "_id"      => "author13-2018-09-26T08:47:07.916233Z",
+            "author"   => "author13",
+            "body"     => "body13",
+            "comments" => [
+              %{
+                "_id"    => "author131-2018-10-26T08:47:07.916233Z",
+                "author" => "author131",
+                "body"   => "body131"
+              },
+              %{
+                "_id"    => "author132-2018-11-26T08:47:07.916233Z",
+                "author" => "author132",
+                "body"   => "body132"
+              },
+              %{
+                "_id"    => "author133-2018-12-26T08:47:07.916233Z",
+                "author" => "author133",
+                "body"   => "body133"
+              }
+            ]
+          }
+        ],
+        "comments" => [
+          %{
+            "_id"    => "author101-2019-01-26T08:47:07.916233Z",
+            "author" => "author101",
+            "body"   => "body101"
+          },
+          %{
+            "_id"    => "author102-2019-02-26T08:47:07.916233Z",
+            "author" => "author102",
+            "body"   => "body102"
+          },
+          %{
+            "_id"    => "author103-2019-03-26T08:47:07.916233Z",
+            "author" => "author103",
+            "body"   => "body103"
+          }
+        ]
+      }
+    }
+  }
+
   test "index should render every item as HTML" do
     :meck.expect(Sazabi.G2gClient, :send, fn _conn, _app_id, %{} ->
-      @success_res_body
+      @index_success_res_body
     end)
     response = Req.get("/question", %{}, [params: %{"locale" => "ja"}])
     assert response.status == 200
     assert response.headers["content-type"] == "text/html"
     body = response.body
     assert String.starts_with?(body, "<!DOCTYPE html>")
-    Enum.each(@success_res_body.body, fn %{"data" => data} ->
+    Enum.each(@index_success_res_body.body, fn %{"data" => data} ->
       assert String.contains?(body, data["title"])
       assert String.contains?(body, data["author"])
       assert String.contains?(body, data["body"])
+    end)
+  end
+
+  test "show should render every item recursively as HTML" do
+    :meck.expect(Sazabi.G2gClient, :send, fn _conn, _app_id, %{} ->
+      @show_success_res_body
+    end)
+    question = @show_success_res_body.body["data"]
+    question_id = @show_success_res_body.body["_id"]
+    response = Req.get("/question/#{question_id}", %{}, [params: %{"locale" => "ja"}])
+    assert response.status == 200
+    assert response.headers["content-type"] == "text/html"
+    body = response.body
+    assert String.starts_with?(body, "<!DOCTYPE html>")
+    assert String.contains?(body, question["title"])
+    assert String.contains?(body, question["author"])
+    assert String.contains?(body, question["body"])
+    Enum.each(question["comments"], fn comment ->
+      assert String.contains?(body, comment["author"])
+      assert String.contains?(body, comment["body"])
+    end)
+    Enum.each(question["answers"], fn answer ->
+      assert String.contains?(body, answer["author"])
+      assert String.contains?(body, answer["body"])
+      Enum.each(answer["comments"], fn comment ->
+        assert String.contains?(body, comment["author"])
+        assert String.contains?(body, comment["body"])
+      end)
     end)
   end
 end
