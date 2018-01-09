@@ -179,4 +179,12 @@ defmodule MasakiStackoverflow.Controller.V1.QuestionTest do
       assert Req.put_json("/v1/question/#{question_id}", input).status == 200
     end)
   end
+
+  test "delete should return 204" do
+    :meck.expect(Sazabi.G2gClient, :send, fn _conn, _app_id, request ->
+      assert %Dodai.DeleteDedicatedDataEntityRequest{} = request
+      Dodai.DeleteDedicatedDataEntitySuccess.new(204, %{}, %{})
+    end)
+    assert Req.delete("/v1/question/#{@success_res_body.body["_id"]}", %{}, []).status == 204
+  end
 end
