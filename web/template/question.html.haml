@@ -1,4 +1,4 @@
-%form#questionForm{action: "/question" method: "post"}
+%form#questionForm{action: "/v1/question" method: "post"}
   %div
     %p ユーザー名
     %input{name: "author" required}
@@ -19,3 +19,18 @@
       = "投稿者: " <> author
     %div
       = body
+
+%script
+  $('form').submit(function(event) {
+    event.preventDefault();
+    $.ajax({
+      url: "/v1/question",
+      type: 'POST',
+      data: $('form').serialize(),
+      timeout: 10000,
+      success: function(response){
+        console.log(response);
+        window.location.href='/question';
+      }
+    });
+  });
