@@ -112,9 +112,9 @@
     $('#operator').val('delete');
     $('#key').val($(this).attr('data-name'));
     $('#value').val(false);
-    $('.modal-title').text($(this).text()+":"+$(this).prevAll('.body').text().trim());
     $('#value').attr('type', 'hidden');
     $('#msg').text($(this).prevAll('.body').text().trim());
+    $('.modal-title').text($(this).text());
   });
   $('#update-form').submit(function(event) {
     event.preventDefault();
