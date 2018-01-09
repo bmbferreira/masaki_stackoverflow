@@ -87,6 +87,12 @@ defmodule MasakiStackoverflow.Controller.V1.Question do
         request = Dodai.UpdateDedicatedDataEntityRequest.new(group_id, @collection_name, question_id, root_key, body)
         %Dodai.UpdateDedicatedDataEntitySuccess{} = Sazabi.G2gClient.send(context, app_id, request)
         json(conn, 200, [])
+      %{"operator" => "delete"} ->
+        query = %{"$set" => %{input["key"] => :false}}
+        body = %Dodai.UpdateDedicatedDataEntityRequestBody{data: query}
+        request = Dodai.UpdateDedicatedDataEntityRequest.new(group_id, @collection_name, question_id, root_key, body)
+        %Dodai.UpdateDedicatedDataEntitySuccess{} = Sazabi.G2gClient.send(context, app_id, request)
+        json(conn, 200, [])
       _ -> json(conn, 403, [])
     end
   end

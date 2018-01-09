@@ -26,6 +26,8 @@
         = body
       %button{type="button" class="update-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name="comments.#{comment_index}.body"}
         = "Edit"
+      %button{type="button" class="delete-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name="comments.#{comment_index}.visible"}
+        = "Delete"
 - for %{"index" => answer_index, "author" => author, "body" => body, "comments" => answer_comments, "visible" => visible} <- answers do
   - if visible do
     %div.answer
@@ -37,6 +39,8 @@
         = "Edit"
       %button{type="button" class="create-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name="answers.#{answer_index}.comments"}
         = "Comment"
+      %button{type="button" class="delete-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name="answers.#{answer_index}.visible"}
+        = "Delete"
     - for %{"index" => comment_index, "author" => author, "body" => body, "visible" => visible} <- answer_comments do
       - if visible do
         %div.comment
@@ -46,6 +50,8 @@
             = body
           %button{type="button" class="update-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name="answers.#{answer_index}.comments.#{comment_index}.body"}
             = "Edit"
+          %button{type="button" class="delete-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name="answers.#{answer_index}.comments.#{comment_index}.visible"}
+            = "Delete"
 %form#update-form{action="/v1/question/#{question_id}" method="PUT"}
   %input#operator{ type="hidden" name="operator" value="temp" }
   %input#key{ type="hidden" name="key" value="temp" }
@@ -98,6 +104,13 @@
     $('#value').val($(this).prev().text().trim());
     $('#value').attr('hidden', false);
     $('.modal-title').text($(this).text());
+  });
+  $('.delete-button').click(function(){
+    $('#operator').val('delete');
+    $('#key').val($(this).attr('data-name'));
+    $('#value').val(false);
+    $('#value').attr('hidden', true);
+    $('.modal-title').text('Delete: \n'+$(this).prev().text().trim());
   });
   $('#update-form').submit(function(event) {
     event.preventDefault();
