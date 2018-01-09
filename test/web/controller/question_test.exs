@@ -172,15 +172,15 @@ defmodule MasakiStackoverflow.Controller.QuestionTest do
     assert String.contains?(body, question["author"])
     assert String.contains?(body, question["body"])
     Enum.each(question["comments"], fn comment ->
-      assert comment["visible"] == :false || String.contains?(body, comment["author"])
-      assert comment["visible"] == :false || String.contains?(body, comment["body"])
+      assert !comment["visible"] || String.contains?(body, comment["author"])
+      assert !comment["visible"] || String.contains?(body, comment["body"])
     end)
     Enum.each(question["answers"], fn answer ->
-      assert answer["visible"] == :false || String.contains?(body, answer["author"])
-      assert answer["visible"] == :false || String.contains?(body, answer["body"])
+      assert !answer["visible"] || String.contains?(body, answer["author"])
+      assert !answer["visible"] || String.contains?(body, answer["body"])
       Enum.each(answer["comments"], fn comment ->
-        assert answer["visible"] == :false || comment["visible"] == :false || String.contains?(body, comment["author"])
-        assert answer["visible"] == :false || comment["visible"] == :false || String.contains?(body, comment["body"])
+        assert !answer["visible"] || !comment["visible"] || String.contains?(body, comment["author"])
+        assert !answer["visible"] || !comment["visible"] || String.contains?(body, comment["body"])
       end)
     end)
   end
