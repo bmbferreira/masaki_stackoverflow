@@ -96,4 +96,13 @@ defmodule MasakiStackoverflow.Controller.V1.Question do
   def get_author() do
     "author"
   end
+
+  def delete(%Conn{context: context} = conn) do
+    question_id = conn.request.path_matches.id
+    %{"app_id" => app_id, "group_id" => group_id, "root_key" => root_key} = MasakiStackoverflow.get_all_env()
+    query = %Dodai.DeleteDedicatedDataEntityRequestQuery{}
+    request = Dodai.DeleteDedicatedDataEntityRequest.new(group_id, @collection_name, question_id, root_key, query)
+    %Dodai.DeleteDedicatedDataEntitySuccess{} = Sazabi.G2gClient.send(context, app_id, request)
+    json(conn, 204, [])
+  end
 end
