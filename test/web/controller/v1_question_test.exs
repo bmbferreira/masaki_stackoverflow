@@ -2,15 +2,18 @@ defmodule MasakiStackoverflow.Controller.V1.QuestionTest do
   use SolomonLib.Test.ControllerTestCase
 
   @create_input %{"title" => "title987", "author" => "author765", "body" => "body432"}
-  @update_input [
-    %{"operator" => "create", "key" => "comments",                  "value" => "created-comment-123"},
-    %{"operator" => "create", "key" => "answers",                   "value" => "created-answer-234"},
-    %{"operator" => "create", "key" => "answers.0.comments",        "value" => "created-comment-345"},
-    %{"operator" => "update",  "key" => "title",                     "value" => "updated-title-456"},
-    %{"operator" => "update",  "key" => "body",                      "value" => "updated-body-567"},
-    %{"operator" => "update",  "key" => "comments.0.body",           "value" => "updated-comment-678"},
-    %{"operator" => "update",  "key" => "answers.0.body",            "value" => "updated-answer-789"},
-    %{"operator" => "update",  "key" => "answers.0.comments.0.body", "value" => "updated-comment-890"}
+  @update_input  [
+    %{"operator" => "create", "key" => "comments",                     "value" => "created-comment-123"},
+    %{"operator" => "create", "key" => "answers",                      "value" => "created-answer-234"},
+    %{"operator" => "create", "key" => "answers.0.comments",           "value" => "created-comment-345"},
+    %{"operator" => "update", "key" => "title",                        "value" => "updated-title-456"},
+    %{"operator" => "update", "key" => "body",                         "value" => "updated-body-567"},
+    %{"operator" => "update", "key" => "comments.0.body",              "value" => "updated-comment-678"},
+    %{"operator" => "update", "key" => "answers.0.body",               "value" => "updated-answer-789"},
+    %{"operator" => "update", "key" => "answers.0.comments.0.body",    "value" => "updated-comment-890"},
+    %{"operator" => "delete", "key" => "comments.0.visible",           "value" => :false},
+    %{"operator" => "delete", "key" => "answers.0.visible",            "value" => :false},
+    %{"operator" => "delete", "key" => "answers.0.comments.0.visible", "value" => :false}
   ]
 
   @success_res_body %Dodai.UpdateDedicatedDataEntitySuccess{
@@ -161,6 +164,12 @@ defmodule MasakiStackoverflow.Controller.V1.QuestionTest do
     updated_answer_comments = Enum.at(question["answers"], 0)["comments"] |> List.replace_at(0, updated_answer_comment)
     recommented_answer      = Enum.at(question["answers"], 0) |> Map.put("comments", updated_answer_comments)
 
+    deleted_comment         = Enum.at(question["comments"],0) |> Map.put("visible", :false)
+    deleted_answer          = Enum.at(question["answers"], 0) |> Map.put("visible", :false)
+    deleted_answer_comment  = Enum.at(question["answers"], 0)["comments"] |> Enum.at(0) |> Map.put("visible", :false)
+    deleted_answer_comments = Enum.at(question["answers"], 0)["comments"] |> List.replace_at(0, deleted_answer_comment)
+    uncommented_answer      = Enum.at(question["answers"], 0) |> Map.put("comments", deleted_answer_comments)
+
     update_result = [
       question |> Map.put("comments", question["comments"] |> List.insert_at(-1, created_comment)),
       question |> Map.put("answers",  question["answers"]  |> List.insert_at(-1, created_answer)),
@@ -169,10 +178,13 @@ defmodule MasakiStackoverflow.Controller.V1.QuestionTest do
       question |> Map.put("body",     "updated-body-567"),
       question |> Map.put("comments", question["comments"] |> List.replace_at(0, updated_comment)),
       question |> Map.put("answers",  question["answers"]  |> List.replace_at(0, updated_answer)),
-      question |> Map.put("answers",  question["answers"]  |> List.replace_at(0, recommented_answer))
+      question |> Map.put("answers",  question["answers"]  |> List.replace_at(0, recommented_answer)),
+      question |> Map.put("comments", question["comments"] |> List.replace_at(0, deleted_comment)),
+      question |> Map.put("answers",  question["comments"] |> List.replace_at(0, deleted_answer)),
+      question |> Map.put("answers",  question["comments"] |> List.replace_at(0, uncommented_answer))
     ]
-    ids =     ["123",       "234",      "345",       "undefined", "undefined", "undefined", "undefined", "undefined"]
-    authors = ["author104", "author14", "author114", "undefined", "undefined", "undefined", "undefined", "undefined"]
+    ids =     ["123",       "234",      "345",       "undefined", "undefined", "undefined", "undefined", "undefined", "undefined", "undefined", "undefined"]
+    authors = ["author104", "author14", "author114", "undefined", "undefined", "undefined", "undefined", "undefined", "undefined", "undefined", "undefined"]
     List.zip([@update_input, update_result, ids, authors]) |> Enum.each(fn {input, result, id, author} ->
       :meck.expect(MasakiStackoverflow.Controller.V1.Question, :set_id, fn -> id end)
       :meck.expect(MasakiStackoverflow.Controller.V1.Question, :get_author, fn -> author end)
