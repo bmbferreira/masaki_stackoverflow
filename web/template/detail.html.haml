@@ -15,6 +15,8 @@
     = "Answer"
   %button{type="button" class="create-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name="comments"}
     = "Comment"
+  %button{type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete-modal"}
+    = "Delete"
 - for %{"index" => comment_index, "author" => author, "body" => body} <- comments do
   %div.comment
     %div.author
@@ -61,6 +63,24 @@
             = "Confirm"
           %button{type="cancel" class="btn btn-secondary" data-dismiss="modal"}
             = "Close"
+%form#delete-form{action="/v1/question/#{question_id}" method="DELETE"}
+  %div#delete-modal{class="modal fade" tabid="-1"}
+    %div{class="modal-dialog"}
+      %div{class="modal-content"}
+        %div{class="modal-header"}
+          %h5{class="modal-title"}
+            = "Delete"
+          %button{type="button" class="close" data-dismiss="modal" aria-label="Close"}
+            %span{aria-hidden="true"}
+              = "X"
+        %div{class="modal-body"}
+          %div{class="form-group"}
+            = title
+        %div{class="modal-footer"}
+          %button{type="submit" class="submit btn btn-primary"}
+            = "Delete"
+          %button{type="cancel" class="btn btn-secondary" data-dismiss="modal"}
+            = "Close"
 %script
   $('.create-button').click(function(){
     $('#operator').val('$push');
@@ -85,6 +105,17 @@
       timeout: 10000,
       success: function(response){
         window.location.reload();
+      }
+    });
+  });
+  $('#delete-form').submit(function(event) {
+    event.preventDefault();
+    $.ajax({
+      url: '/v1'+location.pathname,
+      type: 'DELETE',
+      timeout: 10000,
+      success: function(response){
+        window.location.href='/question';
       }
     });
   });
