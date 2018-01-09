@@ -1,15 +1,5 @@
-%form#questionForm{action: "/v1/question" method: "post"}
-  %div
-    %p ユーザー名
-    %input{name: "author" required}
-  %div
-    %p タイトル
-    %input{name: "title" required}
-  %div
-    %p 本文
-    %input{name: "body" required}
-  %div
-    %input{type: "submit"}
+%button{type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal"}
+  = "Ask a Question"
 
 - for %{"data" => %{"title" => title , "author" => author, "body" => body}} <- questions do
   %div{style: "background-color: #cff; padding: 20px; margin: 20px; border-radius: 20px;"}
@@ -19,6 +9,26 @@
       = "投稿者: " <> author
     %div
       = body
+%form{action="/v1/question" method="POST"}
+  %div#modal{class="modal fade" tabindex="-1" role="dialog"}
+    %div{class="modal-dialog" role="document"}
+      %div{class="modal-content"}
+        %div{class="modal-header"}
+          %h5{class="modal-title"}
+            = "Edit"
+          %button{type="button" class="close" data-dismiss="modal" aria-label="Close"}
+            %span{aria-hidden="true"}
+              = "X"
+        %div{class="modal-body"}
+          %div{class="form-group"}
+            %input{class="form-control" name="title" placeholder="Title" rows="2" required}
+            %input{class="form-control" name="author" placeholder="Your Name" rows="1" required}
+            %input{class="form-control" name="body" placeholder="" rows="5" required}
+        %div{class="modal-footer"}
+          %button{type="submit" id="submit" class="btn btn-primary"}
+            = "Post"
+          %button{type="cancel" class="btn btn-secondary" data-dismiss="modal"}
+            = "Close"
 
 %script
   $('form').submit(function(event) {
