@@ -2,7 +2,11 @@ defmodule MasakiStackoverflow.Controller.V1.QuestionTest do
   use SolomonLib.Test.ControllerTestCase
 
   @create_input %{"title" => "title987", "author" => "author765", "body" => "body432"}
-  @update_input  %{"operator" => "$push", "key" => "answers", "value" => "created-answer-234"}
+  @update_input [
+    %{"operator" => "$push", "key" => "comments",           "value" => "created-comment-123"},
+    %{"operator" => "$push", "key" => "answers",            "value" => "created-answer-234"},
+    %{"operator" => "$push", "key" => "answers.0.comments", "value" => "created-comment-345"}
+  ]
   @success_res_body %Dodai.UpdateDedicatedDataEntitySuccess{
     status_code: 200,
     body: %{
@@ -123,10 +127,23 @@ defmodule MasakiStackoverflow.Controller.V1.QuestionTest do
   test "update should modify contents and return 200" do
     question = @success_res_body.body["data"]
     question_id = @success_res_body.body["_id"]
-    created_answer = %{"_id" => "234", "author" => "author14",  "body" => "created-answer-234", "comments" => []}
-    update_result = question |> Map.put("answers", question["answers"] |> List.insert_at(-1, created_answer))
-      :meck.expect(MasakiStackoverflow.Controller.V1.Question, :set_id, fn -> "234" end)
-      :meck.expect(MasakiStackoverflow.Controller.V1.Question, :get_author, fn -> "author14" end)
+
+    created_comment         = %{"_id" => "123", "author" => "author104", "body" => "created-comment-123"}
+    created_answer          = %{"_id" => "234", "author" => "author14",  "body" => "created-comment-234", "comments" => []}
+    created_answer_comment  = %{"_id" => "345", "author" => "author114", "body" => "created-comment-345"}
+    created_answer_comments = Enum.at(question["answers"], 0)["comments"] |> List.insert_at(-1, created_answer_comment)
+    commented_answer        = Enum.at(question["answers"], 0) |> Map.put("comments", created_answer_comments)
+
+    update_result = [
+      question |> Map.put("comments", question["comments"] |> List.insert_at(-1, created_comment)),
+      question |> Map.put("answers",  question["answers"]  |> List.insert_at(-1, created_answer)),
+      question |> Map.put("answers",  question["answers"]  |> List.replace_at(0, commented_answer))
+    ]
+    ids = ["123", "234", "345"]
+    authors = ["author104", "author14", "author114"]
+    List.zip([@update_input, update_result, ids, authors]) |> Enum.each(fn {input, result, id, author} ->
+      :meck.expect(MasakiStackoverflow.Controller.V1.Question, :set_id, fn -> id end)
+      :meck.expect(MasakiStackoverflow.Controller.V1.Question, :get_author, fn -> author end)
       :meck.expect(Sazabi.G2gClient, :send, fn _conn, _app_id, request ->
         assert %Dodai.UpdateDedicatedDataEntityRequest{body: %Dodai.UpdateDedicatedDataEntityRequestBody{}} = request
         %Dodai.UpdateDedicatedDataEntitySuccess{
@@ -138,10 +155,11 @@ defmodule MasakiStackoverflow.Controller.V1.QuestionTest do
             "createdAt" => "2017-12-27T03:00:02+00:00",
             "updatedAt" => "2017-12-27T05:55:46+00:00",
             "version"   => 2,
-            "data"      => update_result
+            "data"      => result
           }
         }
       end)
-    assert Req.put_json("/v1/question/#{question_id}", @update_input).status == 200
+      assert Req.put_json("/v1/question/#{question_id}", input).status == 200
+    end)
   end
 end
