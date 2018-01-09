@@ -21,8 +21,8 @@ defmodule MasakiStackoverflow.Controller.Question do
     answers = question["data"]["answers"]
       |> Enum.with_index()
       |> Enum.map(fn{map, index} -> Map.put(map, "index", index) end)
-      |> Enum.map(fn(%{"_id" => id, "index" => index, "author" => author, "body" => body, "comments" => comments})
-                  -> %{"_id" => id, "index" => index, "author" => author, "body" => body, "comments" => comments
+      |> Enum.map(fn(%{"_id" => id, "index" => index, "visible" => visible, "author" => author, "body" => body, "comments" => comments})
+                  -> %{"_id" => id, "index" => index, "visible" => visible, "author" => author, "body" => body, "comments" => comments
                     |> Enum.with_index()
                     |> Enum.map(fn({map, index}) -> Map.put(map, "index", index) end)
                   }
