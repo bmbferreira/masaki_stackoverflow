@@ -66,7 +66,8 @@
               = "X"
         %div{class="modal-body"}
           %div{class="form-group"}
-            %input#value{class="form-control" name="value" value="" rows="10" required}
+            %input#value{type="text" class="form-control" name="value" value="" rows="10" required}
+            %div#msg
         %div{class="modal-footer"}
           %button#submit{type="submit" class="submit btn btn-primary"}
             = "Confirm"
@@ -95,22 +96,25 @@
     $('#operator').val('create');
     $('#key').val($(this).attr('data-name'));
     $('#value').val('');
-    $('#value').attr('hidden', false);
+    $('#value').attr('type', 'text');
+    $('#msg').text('');
     $('.modal-title').text($(this).text());
   });
   $('.update-button').click(function(){
     $('#operator').val('update');
     $('#key').val($(this).attr('data-name'));
     $('#value').val($(this).prev().text().trim());
-    $('#value').attr('hidden', false);
+    $('#value').attr('type', 'text');
+    $('#msg').text('');
     $('.modal-title').text($(this).text());
   });
   $('.delete-button').click(function(){
     $('#operator').val('delete');
     $('#key').val($(this).attr('data-name'));
     $('#value').val(false);
-    $('#value').attr('hidden', true);
-    $('.modal-title').text('Delete: \n'+$(this).prev().text().trim());
+    $('.modal-title').text($(this).text()+":"+$(this).prevAll('.body').text().trim());
+    $('#value').attr('type', 'hidden');
+    $('#msg').text($(this).prevAll('.body').text().trim());
   });
   $('#update-form').submit(function(event) {
     event.preventDefault();
