@@ -11,4 +11,22 @@ defmodule MasakiStackoverflow.Controller.Question do
     %Dodai.RetrieveDedicatedDataEntityListSuccess{body: body} = Sazabi.G2gClient.send(context, app_id, request)
     render(conn, 200, "question", [questions: body])
   end
+
+  def show(%Conn{context: context} = conn) do
+    %{"app_id" => app_id, "group_id" => group_id, "root_key" => root_key} = MasakiStackoverflow.get_all_env()
+    question_id = conn.request.path_matches.id
+    request = Dodai.RetrieveDedicatedDataEntityRequest.new(group_id, "question", question_id, root_key)
+    %Dodai.RetrieveDedicatedDataEntitySuccess{body: question} = Sazabi.G2gClient.send(context, app_id, request)
+    comments = question["data"]["comments"]
+    answers = question["data"]["answers"]
+
+    render(conn, 200, "detail", [
+      question_id: question["_id"],
+      title:       question["data"]["title"],
+      author:      question["data"]["author"],
+      body:        question["data"]["body"],
+      comments:    comments,
+      answers:     answers
+    ])
+  end
 end
