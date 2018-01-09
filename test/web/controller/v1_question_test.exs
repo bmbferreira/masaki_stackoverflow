@@ -15,7 +15,18 @@ defmodule MasakiStackoverflow.Controller.V1.QuestionTest do
     %{"operator" => "delete", "key" => "answers.0.visible",            "value" => :false},
     %{"operator" => "delete", "key" => "answers.0.comments.0.visible", "value" => :false}
   ]
-
+  @update_invalid_input [
+    %{"operator" => "create",  "key" => "comments",                  "value" => ""},
+    %{"operator" => "create",  "key" => "answers",                   "value" => ""},
+    %{"operator" => "create",  "key" => "answers.0.comments",        "value" => ""},
+    %{"operator" => "update",  "key" => "title",                     "value" => ""},
+    %{"operator" => "update",  "key" => "body",                      "value" => ""},
+    %{"operator" => "update",  "key" => "comments.0.body",           "value" => ""},
+    %{"operator" => "update",  "key" => "answers.0.body",            "value" => ""},
+    %{"operator" => "update",  "key" => "answers.0.comments.0.body", "value" => ""},
+    %{"operator" => "invalid", "key" => "comments",                  "value" => "created-comment-123"},
+    %{"operator" => "create",  "key" => "invalid",                   "value" => "created-comment-123"},
+  ]
   @success_res_body %Dodai.UpdateDedicatedDataEntitySuccess{
     status_code: 200,
     body: %{
@@ -204,6 +215,16 @@ defmodule MasakiStackoverflow.Controller.V1.QuestionTest do
         }
       end)
       assert Req.put_json("/v1/question/#{question_id}", input).status == 200
+    end)
+  end
+
+  test "update should return 403, if input is invalid" do
+    question_id = @success_res_body.body["_id"]
+    @update_invalid_input |> Enum.each(fn input ->
+      :meck.expect(MasakiStackoverflow.Controller.V1.Question, :set_id, fn -> "id" end)
+      :meck.expect(MasakiStackoverflow.Controller.V1.Question, :get_author, fn -> "author" end)
+      :meck.expect(Sazabi.G2gClient, :send, fn _, _, _ -> assert false end)
+      assert Req.put_json("/v1/question/#{question_id}", input).status == 403
     end)
   end
 
