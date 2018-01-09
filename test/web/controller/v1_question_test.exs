@@ -3,10 +3,16 @@ defmodule MasakiStackoverflow.Controller.V1.QuestionTest do
 
   @create_input %{"title" => "title987", "author" => "author765", "body" => "body432"}
   @update_input [
-    %{"operator" => "$push", "key" => "comments",           "value" => "created-comment-123"},
-    %{"operator" => "$push", "key" => "answers",            "value" => "created-answer-234"},
-    %{"operator" => "$push", "key" => "answers.0.comments", "value" => "created-comment-345"}
+    %{"operator" => "$push", "key" => "comments",                  "value" => "created-comment-123"},
+    %{"operator" => "$push", "key" => "answers",                   "value" => "created-answer-234"},
+    %{"operator" => "$push", "key" => "answers.0.comments",        "value" => "created-comment-345"},
+    %{"operator" => "$set",  "key" => "title",                     "value" => "updated-title-456"},
+    %{"operator" => "$set",  "key" => "body",                      "value" => "updated-body-567"},
+    %{"operator" => "$set",  "key" => "comments.0.body",           "value" => "updated-comment-678"},
+    %{"operator" => "$set",  "key" => "answers.0.body",            "value" => "updated-answer-789"},
+    %{"operator" => "$set",  "key" => "answers.0.comments.0.body", "value" => "updated-comment-890"}
   ]
+
   @success_res_body %Dodai.UpdateDedicatedDataEntitySuccess{
     status_code: 200,
     body: %{
@@ -134,13 +140,24 @@ defmodule MasakiStackoverflow.Controller.V1.QuestionTest do
     created_answer_comments = Enum.at(question["answers"], 0)["comments"] |> List.insert_at(-1, created_answer_comment)
     commented_answer        = Enum.at(question["answers"], 0) |> Map.put("comments", created_answer_comments)
 
+    updated_comment         = Enum.at(question["comments"],0) |> Map.put("body", "updated-comment-678")
+    updated_answer          = Enum.at(question["answers"], 0) |> Map.put("body", "updated-answer-789")
+    updated_answer_comment  = Enum.at(question["answers"], 0)["comments"] |> Enum.at(0) |> Map.put("body", "updated-comment-890")
+    updated_answer_comments = Enum.at(question["answers"], 0)["comments"] |> List.replace_at(0, updated_answer_comment)
+    recommented_answer      = Enum.at(question["answers"], 0) |> Map.put("comments", updated_answer_comments)
+
     update_result = [
       question |> Map.put("comments", question["comments"] |> List.insert_at(-1, created_comment)),
       question |> Map.put("answers",  question["answers"]  |> List.insert_at(-1, created_answer)),
-      question |> Map.put("answers",  question["answers"]  |> List.replace_at(0, commented_answer))
+      question |> Map.put("answers",  question["answers"]  |> List.replace_at(0, commented_answer)),
+      question |> Map.put("title",    "updated-title-456"),
+      question |> Map.put("body",     "updated-body-567"),
+      question |> Map.put("comments", question["comments"] |> List.replace_at(0, updated_comment)),
+      question |> Map.put("answers",  question["answers"]  |> List.replace_at(0, updated_answer)),
+      question |> Map.put("answers",  question["answers"]  |> List.replace_at(0, recommented_answer))
     ]
-    ids = ["123", "234", "345"]
-    authors = ["author104", "author14", "author114"]
+    ids =     ["123",       "234",      "345",       "undefined", "undefined", "undefined", "undefined", "undefined"]
+    authors = ["author104", "author14", "author114", "undefined", "undefined", "undefined", "undefined", "undefined"]
     List.zip([@update_input, update_result, ids, authors]) |> Enum.each(fn {input, result, id, author} ->
       :meck.expect(MasakiStackoverflow.Controller.V1.Question, :set_id, fn -> id end)
       :meck.expect(MasakiStackoverflow.Controller.V1.Question, :get_author, fn -> author end)
