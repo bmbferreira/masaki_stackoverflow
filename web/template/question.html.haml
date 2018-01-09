@@ -1,13 +1,12 @@
 %button{type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal"}
   = "Ask a Question"
-
 - for %{"data" => %{"title" => title , "author" => author, "body" => body}} <- questions do
-  %div{style: "background-color: #cff; padding: 20px; margin: 20px; border-radius: 20px;"}
-    %div{style: "font-size: 150%" float: "left"}
+  %div.question
+    %p.title
       = "Q: " <> title
-    %div{style: "font-size: 60%" float: "left"}
+    %p.author
       = "投稿者: " <> author
-    %div
+    %p.body
       = body
 %form{action="/v1/question" method="POST"}
   %div#modal{class="modal fade" tabindex="-1" role="dialog"}
@@ -29,7 +28,6 @@
             = "Post"
           %button{type="cancel" class="btn btn-secondary" data-dismiss="modal"}
             = "Close"
-
 %script
   $('form').submit(function(event) {
     event.preventDefault();
