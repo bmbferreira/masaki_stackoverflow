@@ -2,7 +2,7 @@ defmodule MasakiStackoverflow.Controller.Signup do
   use SolomonLib.Controller
 
   def index(conn) do
-    render_page(conn, 200)
+    render_page(conn, 200, [])
   end
 
   def create(%SolomonLib.Conn{request: request, context: context} = conn) do
@@ -12,7 +12,7 @@ defmodule MasakiStackoverflow.Controller.Signup do
     res = Sazabi.G2gClient.send(context, app_id, req)
     case res do
       %Dodai.CreateUserSuccess{} ->
-        render_page(conn, 201)
+        render_page(conn, 201, [])
       %Dodai.ValidationError{} ->
         render_page(conn, 400, [error: "Invalid parameter."])
       %Dodai.AuthenticationIDAlreadyTaken{} ->
@@ -20,7 +20,7 @@ defmodule MasakiStackoverflow.Controller.Signup do
     end
   end
 
-  defp render_page(conn, status, params \\ []) do
+  defp render_page(conn, status, params) do
     render(conn, status, "signup", Keyword.merge([email: nil, error: nil], params))
   end
 end
