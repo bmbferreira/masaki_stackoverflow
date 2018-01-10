@@ -1,0 +1,21 @@
+%form(method="post" data-parsley-validate novalidate)
+  Signup
+  %input.form-control#input-mail(name="email" type="email" value="#{email}" placeholder="E-mail Address" required=true autofocus)
+  %input.form-control#input-password(name="password" type="password" placeholder="Password" data-parsley-password minlength="8" required=true)
+  %input.form-control#input-password-confirm(name="confirm" type="password" placeholder="Confirm Password" data-parsley-password minlength="8" data-parsley-equalto="#input-password" required=true)
+  - if error do
+    = error
+  %input.btn.btn-primary.loginBtn(type='submit' value="Signup")
+%script
+  $('form').submit(function(event) {
+    event.preventDefault();
+    $.ajax({
+      url: "/signup",
+      type: 'POST',
+      data: $('form').serialize(),
+      timeout: 10000,
+      success: function(response){
+        window.location.href='/question';
+      }
+    });
+  });
