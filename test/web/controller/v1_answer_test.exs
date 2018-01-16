@@ -73,6 +73,22 @@ defmodule MasakiStackoverflow.Controller.V1.AnswerTest do
       }
     }
   }
+  @show_success_answer  %Dodai.RetrieveDedicatedDataEntitySuccess{
+    status_code: 200,
+    body: %{
+      "_id"       => "answer-id-4",
+      "owner"     => "answer-author-4",
+      "sections"  => [],
+      "createdAt" => "2018-04-01T00:00:00+00:00",
+      "updatedAt" => "2018-04-02T00:00:00+00:00",
+      "version"   => 0,
+      "data"      => %{
+        "body"      => "answer-body-4",
+        "parent_id" => @question_id,
+        "comments"  => ["comment-id-6"]
+      }
+    }
+  }
 
   test "create should return 403, if invalid values were sent" do
     :meck.expect(Sazabi.G2gClient, :send, fn _, _, _ -> assert false end)
@@ -105,8 +121,9 @@ defmodule MasakiStackoverflow.Controller.V1.AnswerTest do
   test "delete should return 204" do
     :meck.expect(Sazabi.G2gClient, :send, fn _conn, _app_id, request ->
       case request do
-        %Dodai.DeleteDedicatedDataEntityRequest{} -> %Dodai.DeleteDedicatedDataEntitySuccess{}
-        %Dodai.UpdateDedicatedDataEntityRequest{} -> @question_without_answer_success
+        %Dodai.RetrieveDedicatedDataEntityRequest{} -> @show_success_answer
+        %Dodai.DeleteDedicatedDataEntityRequest{}   -> %Dodai.DeleteDedicatedDataEntitySuccess{}
+        %Dodai.UpdateDedicatedDataEntityRequest{}   -> @question_without_answer_success
       end
     end)
     assert Req.delete("/v1/question/#{@question_id}/answer/#{@answer_id}", %{}, []).status == 204

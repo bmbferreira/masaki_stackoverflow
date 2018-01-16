@@ -73,10 +73,28 @@ defmodule MasakiStackoverflow.Controller.V1.Question do
 
   def delete(%Conn{context: context} = conn) do
     question_id = conn.request.path_matches.question_id
-    %{"app_id" => app_id, "group_id" => group_id, "root_key" => root_key} = MasakiStackoverflow.get_all_env()
-    query = %Dodai.DeleteDedicatedDataEntityRequestQuery{}
-    request = Dodai.DeleteDedicatedDataEntityRequest.new(group_id, @collection_name, question_id, root_key, query)
-    %Dodai.DeleteDedicatedDataEntitySuccess{} = Sazabi.G2gClient.send(context, app_id, request)
+    question = get_document(context, "question", question_id)
+    question["data"]["comments"] |> Enum.map(fn comment_id -> delete_document(context, "comment", comment_id) end)
+    question["data"]["answers"]  |> Enum.map(fn answer_id ->
+      answer = get_document(context, "answer", answer_id)
+      answer["data"]["comments"] |> Enum.map(fn comment_id -> delete_document(context, "comment", comment_id) end)
+      delete_document(context, "answer", answer_id)
+    end)
+    delete_document(context, "question", question_id)
     json(conn, 204, %{})
+  end
+
+  defp get_document(context, collection_name, id) do
+    %{"app_id" => app_id, "group_id" => group_id, "root_key" => root_key} = MasakiStackoverflow.get_all_env()
+    request = Dodai.RetrieveDedicatedDataEntityRequest.new(group_id, collection_name, id, root_key)
+    %Dodai.RetrieveDedicatedDataEntitySuccess{body: body} = Sazabi.G2gClient.send(context, app_id, request)
+    body
+  end
+
+  defp delete_document(context, collection_name, id) do
+    %{"app_id" => app_id, "group_id" => group_id, "root_key" => root_key} = MasakiStackoverflow.get_all_env()
+    request = Dodai.DeleteDedicatedDataEntityRequest.new(group_id, collection_name, id, root_key)
+    %Dodai.DeleteDedicatedDataEntitySuccess{body: body} = Sazabi.G2gClient.send(context, app_id, request)
+    body
   end
 end
