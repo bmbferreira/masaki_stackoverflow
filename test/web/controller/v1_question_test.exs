@@ -2,7 +2,8 @@ defmodule MasakiStackoverflow.Controller.V1.QuestionTest do
   use SolomonLib.Test.ControllerTestCase
 
   @create_input          %{"title" => "question-title-1", "body" => "question-body-1"}
-  @create_invalid_input [%{"title" => "", "body" => "question-body-1"}, %{"title" => "question-title-1", "body" => ""}]
+  @create_invalid_input [%{"title" => "",                 "body" => "question-body-1"},
+                         %{"title" => "question-title-1", "body" => ""}]
   @update_input          %{"value" => "question-body-2"}
   @update_invalid_input  %{"value" => ""}
   @question_id "question-id-1"
@@ -54,7 +55,7 @@ defmodule MasakiStackoverflow.Controller.V1.QuestionTest do
           "title"     => "question-title-3",
           "body"      => "question-body-3",
           "answers"   => ["answer-id-4"],
-          "comments"   => ["comment-id-5"]
+          "comments"  => ["comment-id-5"]
         }
       }
     }
@@ -111,12 +112,12 @@ defmodule MasakiStackoverflow.Controller.V1.QuestionTest do
       case request do
         %Dodai.DeleteDedicatedDataEntityRequest{}   -> %Dodai.DeleteDedicatedDataEntitySuccess{}
         %Dodai.RetrieveDedicatedDataEntityRequest{} ->
-            case request.data_collection_name do
-              "question" -> @show_success_questions
-              "answer"   -> @show_success_answers
-            end
-            |> Enum.filter(fn %{body: %{"_id" => document_id}} -> document_id == request.id end)
-            |> Enum.at(0)
+          case request.data_collection_name do
+            "question" -> @show_success_questions
+            "answer"   -> @show_success_answers
+          end
+          |> Enum.filter(fn %{body: %{"_id" => document_id}} -> document_id == request.id end)
+          |> Enum.at(0)
       end
     end)
     assert Req.delete("/v1/question/#{@question_id}", %{}, []).status == 204
