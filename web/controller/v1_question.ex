@@ -43,10 +43,10 @@ defmodule MasakiStackoverflow.Controller.V1.Question do
     %{"app_id" => app_id, "group_id" => group_id, "root_key" => root_key} = MasakiStackoverflow.get_all_env()
     question_body = question_body |> Map.put("answers", []) |> Map.put("comments", [])
     validate_question_body(conn1, question_body, fn conn2, validated_question_body ->
-      query   = %Dodai.CreateDedicatedDataEntityRequestBody{data: Map.from_struct(validated_question_body)}
+      query   = %Dodai.CreateDedicatedDataEntityRequestBody{data: validated_question_body}
       request = Dodai.CreateDedicatedDataEntityRequest.new(group_id, @collection_name, root_key, query)
-      %Dodai.CreateDedicatedDataEntitySuccess{body: body} = Sazabi.G2gClient.send(context, app_id, request)
-      json(conn2, 201, %{"id" => body["_id"]})
+        %Dodai.CreateDedicatedDataEntitySuccess{body: question} = Sazabi.G2gClient.send(context, app_id, request)
+      json(conn2, 201, %{"_id" => question["_id"]})
     end)
   end
 
@@ -64,9 +64,8 @@ defmodule MasakiStackoverflow.Controller.V1.Question do
       %{"value" => ""}    ->
         json(conn, 403, %{})
       %{"value" => value} ->
-        query = %{"$set" => %{"body" => value}}
-        body = %Dodai.UpdateDedicatedDataEntityRequestBody{data: query}
-        request = Dodai.UpdateDedicatedDataEntityRequest.new(group_id, "question", question_id, root_key, body)
+        body = %Dodai.UpdateDedicatedDataEntityRequestBody{data: %{"$set" => %{"body" => value}}}
+        request = Dodai.UpdateDedicatedDataEntityRequest.new(group_id, @collection_name, question_id, root_key, body)
         %Dodai.UpdateDedicatedDataEntitySuccess{} = Sazabi.G2gClient.send(context, app_id, request)
         json(conn, 200, %{})
     end
