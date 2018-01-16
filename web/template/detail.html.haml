@@ -15,16 +15,16 @@
     = "Comment"
   %button{type="button" class="delete-button btn btn-danger" data-toggle="modal" data-target="#modal" data-method="delete" data-url=""}
     = "Delete"
-- for %{"_id" => comment_id, "owner" => author, "data" => %{"body" => body}} <- comments do
-  %div.comment
-    %div.author
-      = "Comment by " <> author
-    %div.body
-      = body
-    %button{type="button" class="update-button btn btn-primary" data-toggle="modal" data-target="#modal" data-method="put"   data-url="/comment/#{comment_id}"}
-      = "Edit"
-    %button{type="button" class="delete-button btn btn-danger" data-toggle="modal" data-target="#modal" data-method="delete" data-url="/comment/#{comment_id}"}
-      = "Delete"
+  - for %{"_id" => comment_id, "owner" => author, "data" => %{"body" => body}} <- comments do
+    %div.comment
+      %div.author
+        = "Comment by " <> author
+      %div.body
+        = body
+      %button{type="button" class="update-button btn btn-primary" data-toggle="modal" data-target="#modal" data-method="put"   data-url="/comment/#{comment_id}"}
+        = "Edit"
+      %button{type="button" class="delete-button btn btn-danger" data-toggle="modal" data-target="#modal" data-method="delete" data-url="/comment/#{comment_id}"}
+        = "Delete"
 - for %{"_id" => answer_id, "owner" => author, "data" => %{"body" => body, "comments" => comments}} <- answers do
   %div.answer
     %div.author
