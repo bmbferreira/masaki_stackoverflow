@@ -7,49 +7,47 @@
     = "Question by " <> author
   %div.body
     = body
-  %button{type="button" class="update-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name="body"}
+  %button{type="button" class="update-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-method="put" data-url=""}
     = "Edit"
-  %button{type="button" class="create-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name="answers"}
+  %button{type="button" class="create-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-method="post" data-url="/answer"}
     = "Answer"
-  %button{type="button" class="create-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name="comments"}
+  %button{type="button" class="create-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-method="post" data-url="/comment"}
     = "Comment"
-  %button{type="button" class="delete-button btn btn-danger" data-toggle="modal" data-target="#delete-modal"}
+  %button{type="button" class="delete-button btn btn-danger" data-toggle="modal" data-target="#delete-modal" data-method="delete" data-url=""}
     = "Delete"
-- for %{"index" => comment_index, "author" => author, "body" => body} <- comments do
+- for %{"_id" => comment_id, "author" => author, "body" => body} <- comments do
   %div.comment
     %div.author
       = "Comment by " <> author
     %div.body
       = body
-    %button{type="button" class="update-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name="comments.#{comment_index}.body"}
+    %button{type="button" class="update-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-method="put"   data-url="/comment/#{comment_id}"}
       = "Edit"
-    %button{type="button" class="delete-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name=""}
+    %button{type="button" class="delete-button btn btn-danger" data-toggle="modal" data-target="#update-modal" data-method="delete" data-url="/comment/#{comment_id}"}
       = "Delete"
-- for %{"index" => answer_index, "author" => author, "body" => body, "comments" => answer_comments} <- answers do
+- for %{"_id" => answer_id, "author" => author, "body" => body, "comments" => answer_comments} <- answers do
   %div.answer
     %div.author
       = "Answer by " <> author
     %div.body
       = body
-    %button{type="button" class="update-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name="answers.#{answer_index}.body"}
+    %button{type="button" class="update-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-method="put"   data-url="/answer/#{answer_id}"}
       = "Edit"
-    %button{type="button" class="create-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name="answers.#{answer_index}.comments"}
+    %button{type="button" class="create-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-method="post"  data-url="/answer/#{answer_id}/comment"}
       = "Comment"
-    %button{type="button" class="delete-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name=""}
+    %button{type="button" class="delete-button btn btn-danger" data-toggle="modal" data-target="#update-modal" data-method="delete" data-url="/answer/#{answer_id}"}
       = "Delete"
-    - for %{"index" => comment_index, "author" => author, "body" => body} <- answer_comments do
+    - for %{"_id" => comment_id, "author" => author, "body" => body} <- answer_comments do
       %div.comment
         %div.author
           = "Comment by " <> author
         %div.body
           = body
-        %button{type="button" class="update-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name="answers.#{answer_index}.comments.#{comment_index}.body"}
+        %button{type="button" class="update-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-method="put"   data-url="/answer/#{answer_id}/comment/#{comment_id}"}
           = "Edit"
-        %button{type="button" class="delete-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name=""}
+        %button{type="button" class="delete-button btn btn-danger" data-toggle="modal" data-target="#update-modal" data-method="delete" data-url="/answer/#{answer_id}/comment/#{comment_id}"}
           = "Delete"
 %form#update-form{action="/v1/question/#{question_id}" method="PUT"}
-  %input#operator{ type="hidden" name="operator" value="temp" }
-  %input#key{ type="hidden" name="key" value="temp" }
   %div#update-modal{class="modal fade" tabid="-1"}
     %div{class="modal-dialog"}
       %div{class="modal-content"}
@@ -61,7 +59,9 @@
               = "X"
         %div{class="modal-body"}
           %div{class="form-group"}
-            %input#value{type="text" class="form-control" name="value" value="" rows="10" required}
+            %input#url{   type="hidden" class="form-control" value=""}
+            %input#type{  type="hidden" class="form-control" value=""}
+            %input#value{ type="text"   class="form-control" value="" name="value" rows="10" required}
             %div#msg
         %div{class="modal-footer"}
           %button#submit{type="submit" class="submit btn btn-primary"}
@@ -88,34 +88,34 @@
             = "Close"
 %script
   $('.create-button').click(function(){
-    $('#operator').val('create');
-    $('#key').val($(this).attr('data-name'));
-    $('#value').val('');
+    $('#url').val($(this).attr('data-url'));
+    $('#type').val($(this).attr('data-method'));
     $('#value').attr('type', 'text');
+    $('#value').val('');
     $('#msg').text('');
     $('.modal-title').text($(this).text());
   });
   $('.update-button').click(function(){
-    $('#operator').val('update');
-    $('#key').val($(this).attr('data-name'));
-    $('#value').val($(this).prev().text().trim());
+    $('#url').val($(this).attr('data-url'));
+    $('#type').val($(this).attr('data-method'));
     $('#value').attr('type', 'text');
+    $('#value').val($(this).prevAll('.body').text().trim());
     $('#msg').text('');
     $('.modal-title').text($(this).text());
   });
   $('.delete-button').click(function(){
-    $('#operator').val('update');
-    $('#key').val($(this).attr('data-name'));
-    $('#value').val($(this).prev().text().trim());
-    $('#value').attr('type', 'text');
-    $('#msg').text('');
+    $('#url').val($(this).attr('data-url'));
+    $('#type').val($(this).attr('data-method'));
+    $('#value').attr('type', 'hidden');
+    $('#value').val('');
+    $('#msg').text($(this).prevAll('.body').text().trim());
     $('.modal-title').text($(this).text());
   });
   $('#update-form').submit(function(event) {
     event.preventDefault();
     $.ajax({
-      url: '/v1'+location.pathname,
-      type: 'PUT',
+      url: '/v1'+location.pathname+$('#url').val(),
+      type: $('#type').val(),
       data: $('#update-form').serialize(),
       timeout: 10000,
       success: function(response){
