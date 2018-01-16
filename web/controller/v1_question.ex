@@ -81,8 +81,6 @@ defmodule MasakiStackoverflow.Controller.V1.Question do
         create_comment(conn1)
       %{"operator" => "update", "value" => ""} ->
         json(conn1, 403, [])
-      %{"operator" => "update", "key" => "title"} ->
-        update_title(conn1)
       %{"operator" => "update", "key" => "body"} ->
         update_body(conn1)
       %{"operator" => "update", "key" => "answers"} ->
@@ -126,19 +124,6 @@ defmodule MasakiStackoverflow.Controller.V1.Question do
         %Dodai.UpdateDedicatedDataEntitySuccess{} = Sazabi.G2gClient.send(context, app_id, request)
         json(conn3, 200, [])
       end)
-    end)
-  end
-
-  defp update_title(%Conn{request: %Request{body: input}, context: context} = conn1) do
-    question_id = conn1.request.path_matches.id
-    %{"app_id" => app_id, "group_id" => group_id, "root_key" => root_key} = MasakiStackoverflow.get_all_env()
-    update_key = input["key"]
-    validate_update_key(conn1, update_key, fn conn2, validated_update_key ->
-      query = %{"$set" => %{validated_update_key => input["value"]}}
-      body = %Dodai.UpdateDedicatedDataEntityRequestBody{data: query}
-      request = Dodai.UpdateDedicatedDataEntityRequest.new(group_id, @collection_name, question_id, root_key, body)
-      %Dodai.UpdateDedicatedDataEntitySuccess{} = Sazabi.G2gClient.send(context, app_id, request)
-      json(conn2, 200, [])
     end)
   end
 
