@@ -98,7 +98,7 @@
     $.ajax({
       url: '/v1'+location.pathname+$('#url').val(),
       type: $('#type').val(),
-      data: $('#form').serialize(),
+      data: $('form').serialize(),
       timeout: 10000,
       success: function(response){
         if($('#type').val()=='delete' && $('#url').val()==''){
