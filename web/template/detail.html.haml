@@ -15,41 +15,38 @@
     = "Comment"
   %button{type="button" class="delete-button btn btn-danger" data-toggle="modal" data-target="#delete-modal"}
     = "Delete"
-- for %{"index" => comment_index, "author" => author, "body" => body, "visible" => visible} <- comments do
-  - if visible do
-    %div.comment
-      %div.author
-        = "Comment by " <> author
-      %div.body
-        = body
-      %button{type="button" class="update-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name="comments.#{comment_index}.body"}
-        = "Edit"
-      %button{type="button" class="delete-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name="comments.#{comment_index}.visible"}
-        = "Delete"
-- for %{"index" => answer_index, "author" => author, "body" => body, "comments" => answer_comments, "visible" => visible} <- answers do
-  - if visible do
-    %div.answer
-      %div.author
-        = "Answer by " <> author
-      %div.body
-        = body
-      %button{type="button" class="update-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name="answers.#{answer_index}.body"}
-        = "Edit"
-      %button{type="button" class="create-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name="answers.#{answer_index}.comments"}
-        = "Comment"
-      %button{type="button" class="delete-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name="answers.#{answer_index}.visible"}
-        = "Delete"
-    - for %{"index" => comment_index, "author" => author, "body" => body, "visible" => visible} <- answer_comments do
-      - if visible do
-        %div.comment
-          %div.author
-            = "Comment by " <> author
-          %div.body
-            = body
-          %button{type="button" class="update-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name="answers.#{answer_index}.comments.#{comment_index}.body"}
-            = "Edit"
-          %button{type="button" class="delete-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name="answers.#{answer_index}.comments.#{comment_index}.visible"}
-            = "Delete"
+- for %{"index" => comment_index, "author" => author, "body" => body} <- comments do
+  %div.comment
+    %div.author
+      = "Comment by " <> author
+    %div.body
+      = body
+    %button{type="button" class="update-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name="comments.#{comment_index}.body"}
+      = "Edit"
+    %button{type="button" class="delete-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name=""}
+      = "Delete"
+- for %{"index" => answer_index, "author" => author, "body" => body, "comments" => answer_comments} <- answers do
+  %div.answer
+    %div.author
+      = "Answer by " <> author
+    %div.body
+      = body
+    %button{type="button" class="update-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name="answers.#{answer_index}.body"}
+      = "Edit"
+    %button{type="button" class="create-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name="answers.#{answer_index}.comments"}
+      = "Comment"
+    %button{type="button" class="delete-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name=""}
+      = "Delete"
+    - for %{"index" => comment_index, "author" => author, "body" => body} <- answer_comments do
+      %div.comment
+        %div.author
+          = "Comment by " <> author
+        %div.body
+          = body
+        %button{type="button" class="update-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name="answers.#{answer_index}.comments.#{comment_index}.body"}
+          = "Edit"
+        %button{type="button" class="delete-button btn btn-primary" data-toggle="modal" data-target="#update-modal" data-name=""}
+          = "Delete"
 %form#update-form{action="/v1/question/#{question_id}" method="PUT"}
   %input#operator{ type="hidden" name="operator" value="temp" }
   %input#key{ type="hidden" name="key" value="temp" }
@@ -107,11 +104,11 @@
     $('.modal-title').text($(this).text());
   });
   $('.delete-button').click(function(){
-    $('#operator').val('delete');
+    $('#operator').val('update');
     $('#key').val($(this).attr('data-name'));
-    $('#value').val(false);
-    $('#value').attr('type', 'hidden');
-    $('#msg').text($(this).prevAll('.body').text().trim());
+    $('#value').val($(this).prev().text().trim());
+    $('#value').attr('type', 'text');
+    $('#msg').text('');
     $('.modal-title').text($(this).text());
   });
   $('#update-form').submit(function(event) {
