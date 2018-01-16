@@ -1,130 +1,101 @@
 defmodule MasakiStackoverflow.Controller.QuestionTest do
   use SolomonLib.Test.ControllerTestCase
 
+  @question_id     "question-id-3"
   @index_success_res_body %Dodai.RetrieveDedicatedDataEntityListSuccess{
     status_code: 200,
     body: [
       %{
-        "_id"       => "5a2f3afa38000038008d0d9e",
-        "owner"     => "_root",
-        "createdAt" => "2017-12-01T01:00:00+00:00",
-        "updatedAt" => "2017-12-01T01:00:00+00:00",
+        "_id"       => "question-id-1",
+        "owner"     => "question-author-1",
+        "createdAt" => "2018-01-01T01:00:00+00:00",
+        "updatedAt" => "2018-01-02T01:00:00+00:00",
         "sections"  => [],
         "version"   => 0,
-        "data"      => %{"title" => "title123", "author" => "user456", "body" => "body789", "answers" => [], "comments" => []}
+        "data"      => %{"title" => "question-title-1", "body" => "question-body-1", "answers" => ["answer-id-11","answer-id-12"], "comments" => ["comment-id-101","comment-id-102"]}
       },
       %{
-        "_id"       => "5a2f64f33900003900070025",
-        "owner"     => "_root",
-        "createdAt" => "2017-12-01T01:00:01+00:00",
-        "updatedAt" => "2017-12-01T01:00:01+00:00",
+        "_id"       => "question-id-2",
+        "owner"     => "question-author-2",
+        "createdAt" => "2018-02-01T01:00:00+00:00",
+        "updatedAt" => "2018-02-02T01:00:00+00:00",
         "sections"  => [],
         "version"   => 0,
-        "data"      => %{"title" => "TITLE124", "author" => "USER248", "body" => "BODY4816", "answers" => [], "comments" => []}
+        "data"      => %{"title" => "question-title-2", "body" => "question-body-2", "answers" => ["answer-id-21","answer-id-22"], "comments" => ["comment-id-201","comment-id-202"]}
       }
     ]
   }
-  @show_success_res_body %Dodai.RetrieveDedicatedDataEntitySuccess{
-    status_code: 200,
-    body: %{
-      "_id"       => "5a430cb23900003900091afe",
-      "owner"     => "_root",
-      "sections"  => [],
-      "createdAt" => "2017-12-27T03:00:02+00:00",
-      "updatedAt" => "2017-12-27T05:55:46+00:00",
-      "version"   => 2,
-      "data"      => %{
-        "title"     => "title1",
-        "body"      => "body1",
-        "author"    => "author1",
-        "answers"   => [
-          %{
-            "_id"      => "author11-2018-01-26T08:47:07.916233Z",
-            "author"   => "author11",
-            "body"     => "body11",
-            "comments" => [
-              %{
-                "_id"     => "author111-2018-02-26T08:47:07.916233Z",
-                "author"  => "author111",
-                "body"    => "body111"
-              },
-              %{
-                "_id"     => "author112-2018-03-26T08:47:07.916233Z",
-                "author"  => "author112",
-                "body"    => "body112"
-              },
-              %{
-                "_id"     => "author113-2018-04-26T08:47:07.916233Z",
-                "author"  => "author113",
-                "body"    => "body113"
-              }
-            ]
-          },
-          %{
-            "_id"      => "author12-2018-05-26T08:47:07.916233Z",
-            "author"   => "author12",
-            "body"     => "body12",
-            "comments" => [
-              %{
-                "_id"     => "author121-2018-06-26T08:47:07.916233Z",
-                "author"  => "author121",
-                "body"    => "body121"
-              },
-              %{
-                "_id"     => "author122-2018-07-26T08:47:07.916233Z",
-                "author"  => "author122",
-                "body"    => "body122"
-              },
-              %{
-                "_id"     => "author123-2018-08-26T08:47:07.916233Z",
-                "author"  => "author123",
-                "body"    => "body123"
-              }
-            ]
-          },
-          %{
-            "_id"      => "author13-2018-09-26T08:47:07.916233Z",
-            "author"   => "author13",
-            "body"     => "body13",
-            "comments" => [
-              %{
-                "_id"     => "author131-2018-10-26T08:47:07.916233Z",
-                "author"  => "author131",
-                "body"    => "body131"
-              },
-              %{
-                "_id"     => "author132-2018-11-26T08:47:07.916233Z",
-                "author"  => "author132",
-                "body"    => "body132"
-              },
-              %{
-                "_id"     => "author133-2018-12-26T08:47:07.916233Z",
-                "author"  => "author133",
-                "body"    => "body133"
-              }
-            ]
-          }
-        ],
-        "comments" => [
-          %{
-            "_id"     => "author101-2019-01-26T08:47:07.916233Z",
-            "author"  => "author101",
-            "body"    => "body101"
-          },
-          %{
-            "_id"     => "author102-2019-02-26T08:47:07.916233Z",
-            "author"  => "author102",
-            "body"    => "body102"
-          },
-          %{
-            "_id"     => "author103-2019-03-26T08:47:07.916233Z",
-            "author"  => "author103",
-            "body"    => "body103"
-          }
-        ]
+  @show_success_questions [
+    %Dodai.RetrieveDedicatedDataEntitySuccess{
+      status_code: 200,
+      body: %{
+        "_id"       => @question_id,
+        "owner"     => "question-author-3",
+        "sections"  => [],
+        "createdAt" => "2018-03-01T00:00:00+00:00",
+        "updatedAt" => "2018-03-02T00:00:00+00:00",
+        "version"   => 0,
+        "data"      => %{
+          "title"     => "question-title-3",
+          "body"      => "question-body-3",
+          "answers"   => ["answer-id-4"],
+          "comments"   => ["comment-id-5"]
+        }
       }
     }
-  }
+  ]
+  @show_success_answers [
+    %Dodai.RetrieveDedicatedDataEntitySuccess{
+      status_code: 200,
+      body: %{
+        "_id"       => "answer-id-4",
+        "owner"     => "answer-author-4",
+        "sections"  => [],
+        "createdAt" => "2018-04-01T00:00:00+00:00",
+        "updatedAt" => "2018-04-02T00:00:00+00:00",
+        "version"   => 0,
+        "data"      => %{
+          "body"      => "answer-body-4",
+          "parent_id" => @question_id,
+          "comments"  => ["comment-id-6"]
+        }
+      }
+    }
+  ]
+  @show_success_comments [
+    %Dodai.RetrieveDedicatedDataEntitySuccess{
+      status_code: 200,
+      body: %{
+        "_id"       => "comment-id-5",
+        "owner"     => "comment-author-5",
+        "sections"  => [],
+        "createdAt" => "2018-05-01T00:00:00+00:00",
+        "updatedAt" => "2018-05-02T00:00:00+00:00",
+        "version"   => 0,
+        "data"      => %{
+          "body"      => "comment-body-5",
+          "parent_type" => "question",
+          "parent_id" => @question_id
+        }
+      }
+    },
+    %Dodai.RetrieveDedicatedDataEntitySuccess{
+      status_code: 200,
+      body: %{
+        "_id"       => "comment-id-6",
+        "owner"     => "comment-author-6",
+        "sections"  => [],
+        "createdAt" => "2018-06-01T00:00:00+00:00",
+        "updatedAt" => "2018-06-02T00:00:00+00:00",
+        "version"   => 0,
+        "data"      => %{
+          "body"      => "comment-body-6",
+          "parent_type" => "answer",
+          "parent_id" => "answer-id-4"
+        }
+      }
+    }
+  ]
 
   test "index should render every item as HTML" do
     :meck.expect(Sazabi.G2gClient, :send, fn _conn, _app_id, %{} ->
@@ -137,35 +108,46 @@ defmodule MasakiStackoverflow.Controller.QuestionTest do
     assert String.starts_with?(body, "<!DOCTYPE html>")
     Enum.each(@index_success_res_body.body, fn %{"data" => data} ->
       assert String.contains?(body, data["title"])
-      assert String.contains?(body, data["author"])
       assert String.contains?(body, data["body"])
     end)
   end
 
-  test "show should render every item recursively as HTML" do
-    :meck.expect(Sazabi.G2gClient, :send, fn _conn, _app_id, %{} ->
-      @show_success_res_body
+  test "show should render every item as HTML" do
+    :meck.expect(Sazabi.G2gClient, :send, fn _conn, _app_id, request ->
+      case request.data_collection_name do
+        "question" -> @show_success_questions
+        "answer"   -> @show_success_answers
+        "comment"  -> @show_success_comments
+      end
+      |> Enum.filter(fn %{body: %{"_id" => document_id}} -> document_id == request.id end)
+      |> Enum.at(0)
     end)
-    question = @show_success_res_body.body["data"]
-    question_id = @show_success_res_body.body["_id"]
-    response = Req.get("/question/#{question_id}", %{}, [params: %{"locale" => "ja"}])
+    response = Req.get("/question/#{@question_id}", %{}, [params: %{"locale" => "ja"}])
     assert response.status == 200
     assert response.headers["content-type"] == "text/html"
     body = response.body
     assert String.starts_with?(body, "<!DOCTYPE html>")
-    assert String.contains?(body, question["title"])
-    assert String.contains?(body, question["author"])
-    assert String.contains?(body, question["body"])
-    Enum.each(question["comments"], fn comment ->
-      assert String.contains?(body, comment["author"])
-      assert String.contains?(body, comment["body"])
-    end)
-    Enum.each(question["answers"], fn answer ->
-      assert String.contains?(body, answer["author"])
-      assert String.contains?(body, answer["body"])
-      Enum.each(answer["comments"], fn comment ->
-        assert String.contains?(body, comment["author"])
-        assert String.contains?(body, comment["body"])
+    @show_success_questions |> Enum.each(fn question ->
+      assert String.contains?(body, question.body["owner"])
+      assert String.contains?(body, question.body["data"]["title"])
+      assert String.contains?(body, question.body["data"]["body"])
+      question.body["data"]["answers"] |> Enum.each(fn answer_id ->
+        answer = @show_success_answers  |> Enum.filter(fn answer -> answer.body["_id"] == answer_id end)
+        |> Enum.at(0)
+        assert String.contains?(body, answer.body["owner"])
+        assert String.contains?(body, answer.body["data"]["body"])
+        answer.body["data"]["comments"] |> Enum.each(fn comment_id ->
+          comment = @show_success_comments |> Enum.filter(fn comment -> comment.body["_id"] == comment_id end)
+          |> Enum.at(0)
+          assert String.contains?(body, comment.body["owner"])
+          assert String.contains?(body, comment.body["data"]["body"])
+        end)
+      end)
+      question.body["data"]["comments"] |> Enum.each(fn comment_id ->
+        comment = @show_success_comments |> Enum.filter(fn comment -> comment.body["_id"] == comment_id end)
+        |> Enum.at(0)
+        assert String.contains?(body, comment.body["owner"])
+        assert String.contains?(body, comment.body["data"]["body"])
       end)
     end)
   end

@@ -1,6 +1,6 @@
 %button{type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal"}
   = "Ask a Question"
-- for %{"_id" => id, "data" => %{"title" => title , "author" => author, "body" => body}} <- questions do
+- for %{"_id" => id, "owner" => author, "data" => %{"title" => title , "body" => body}} <- questions do
   %div.question
     %a{href : "/question/#{id}"}
       %p.title
@@ -22,7 +22,6 @@
         %div{class="modal-body"}
           %div{class="form-group"}
             %input{class="form-control" name="title" placeholder="Title" rows="2" required}
-            %input{class="form-control" name="author" placeholder="Your Name" rows="1" required}
             %input{class="form-control" name="body" placeholder="" rows="5" required}
         %div{class="modal-footer"}
           %button{type="submit" id="submit" class="btn btn-primary"}

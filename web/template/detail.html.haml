@@ -15,7 +15,7 @@
     = "Comment"
   %button{type="button" class="delete-button btn btn-danger" data-toggle="modal" data-target="#delete-modal" data-method="delete" data-url=""}
     = "Delete"
-- for %{"_id" => comment_id, "author" => author, "body" => body} <- comments do
+- for %{"_id" => comment_id, "owner" => author, "data" => %{"body" => body}} <- comments do
   %div.comment
     %div.author
       = "Comment by " <> author
@@ -25,7 +25,7 @@
       = "Edit"
     %button{type="button" class="delete-button btn btn-danger" data-toggle="modal" data-target="#update-modal" data-method="delete" data-url="/comment/#{comment_id}"}
       = "Delete"
-- for %{"_id" => answer_id, "author" => author, "body" => body, "comments" => answer_comments} <- answers do
+- for %{"_id" => answer_id, "owner" => author, "data" => %{"body" => body, "comments" => comments}} <- answers do
   %div.answer
     %div.author
       = "Answer by " <> author
@@ -37,7 +37,7 @@
       = "Comment"
     %button{type="button" class="delete-button btn btn-danger" data-toggle="modal" data-target="#update-modal" data-method="delete" data-url="/answer/#{answer_id}"}
       = "Delete"
-    - for %{"_id" => comment_id, "author" => author, "body" => body} <- answer_comments do
+    - for %{"_id" => comment_id, "owner" => author, "data" => %{"body" => body}} <- comments do
       %div.comment
         %div.author
           = "Comment by " <> author
