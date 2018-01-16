@@ -9,15 +9,16 @@ defmodule MasakiStackoverflow.Router do
   put    "/v1/question/:question_id", V1.Question, :update
   delete "/v1/question/:question_id", V1.Question, :delete
 
-  post   "/v1/question/:question_id/comment",             V1.Question, :update
-  put    "/v1/question/:question_id/comment/:comment_id", V1.Question, :update
-  delete "/v1/question/:question_id/comment/:comment_id", V1.Question, :update
+  post   "/v1/question/:question_id/comment",             V1.Comment, :create
+  put    "/v1/question/:question_id/comment/:comment_id", V1.Comment, :update
+  delete "/v1/question/:question_id/comment/:comment_id", V1.Comment, :delete
 
-  post   "/v1/question/:question_id/answer",              V1.Question, :update
-  put    "/v1/question/:question_id/answer/:answer_id",   V1.Question, :update
-  delete "/v1/question/:question_id/answer/:answer_id",   V1.Question, :update
+  post   "/v1/question/:question_id/answer",              V1.Answer,  :create
+  put    "/v1/question/:question_id/answer/:answer_id",   V1.Answer,  :update
+  delete "/v1/question/:question_id/answer/:answer_id",   V1.Answer,  :delete
 
-  post   "/v1/question/:question_id/answer/:answer_id/comment",             V1.Question, :update
-  put    "/v1/question/:question_id/answer/:answer_id/comment/:comment_id", V1.Question, :update
-  delete "/v1/question/:question_id/answer/:answer_id/comment/:comment_id", V1.Question, :update
+  post   "/v1/question/:question_id/answer/:answer_id/comment",             V1.Comment, :create
+  put    "/v1/question/:question_id/answer/:answer_id/comment/:comment_id", V1.Comment, :update
+  delete "/v1/question/:question_id/answer/:answer_id/comment/:comment_id", V1.Comment, :delete
+
 end
