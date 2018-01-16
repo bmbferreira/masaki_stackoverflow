@@ -73,56 +73,138 @@ defmodule MasakiStackoverflow.Controller.V1.Question do
     end
   end
 
-  def update(%Conn{request: %Request{body: input}, context: context} = conn1) do
-    question_id = conn1.request.path_matches.id
-    %{"app_id" => app_id, "group_id" => group_id, "root_key" => root_key} = MasakiStackoverflow.get_all_env()
+  def update(%Conn{request: %Request{body: input}} = conn1) do
     case input do
       %{"operator" => "create", "key" => "answers"} ->
-        answer_body = %{"_id" => set_id(), "author" => get_author(), "body" => input["value"], "comments" => [], "visible" => :true}
-        create_key = input["key"]
-        validate_answer_body(conn1, answer_body, fn conn2, validated_answer_body ->
-          validate_create_key(conn2, create_key, fn conn3, validated_create_key ->
-            query = %{"$push" => %{validated_create_key => validated_answer_body}}
-            body = %Dodai.UpdateDedicatedDataEntityRequestBody{data: query}
-            request = Dodai.UpdateDedicatedDataEntityRequest.new(group_id, @collection_name, question_id, root_key, body)
-            %Dodai.UpdateDedicatedDataEntitySuccess{} = Sazabi.G2gClient.send(context, app_id, request)
-            json(conn3, 200, [])
-          end)
-        end)
+        create_answer(conn1)
       %{"operator" => "create"} ->
-        comment_body = %{"_id" => set_id(), "author" => get_author(), "body" => input["value"], "visible" => :true}
-        create_key = input["key"]
-        validate_comment_body(conn1, comment_body, fn conn2, validated_comment_body ->
-          validate_create_key(conn2, create_key, fn conn3, validated_create_key ->
-            query = %{"$push" => %{validated_create_key => validated_comment_body}}
-            body = %Dodai.UpdateDedicatedDataEntityRequestBody{data: query}
-            request = Dodai.UpdateDedicatedDataEntityRequest.new(group_id, @collection_name, question_id, root_key, body)
-            %Dodai.UpdateDedicatedDataEntitySuccess{} = Sazabi.G2gClient.send(context, app_id, request)
-            json(conn3, 200, [])
-          end)
-        end)
+        create_comment(conn1)
       %{"operator" => "update", "value" => ""} ->
         json(conn1, 403, [])
+      %{"operator" => "update", "key" => "title"} ->
+        update_title(conn1)
+      %{"operator" => "update", "key" => "body"} ->
+        update_body(conn1)
+      %{"operator" => "update", "key" => "answers"} ->
+        update_answer(conn1)
       %{"operator" => "update"} ->
-        update_key = input["key"]
-        validate_update_key(conn1, update_key, fn conn2, validated_update_key ->
-          query = %{"$set" => %{validated_update_key => input["value"]}}
-          body = %Dodai.UpdateDedicatedDataEntityRequestBody{data: query}
-          request = Dodai.UpdateDedicatedDataEntityRequest.new(group_id, @collection_name, question_id, root_key, body)
-          %Dodai.UpdateDedicatedDataEntitySuccess{} = Sazabi.G2gClient.send(context, app_id, request)
-          json(conn2, 200, [])
-        end)
+        update_comment(conn1)
+      %{"operator" => "delete", "key" => "answers"} ->
+        delete_answer(conn1)
       %{"operator" => "delete"} ->
-        delete_key = input["key"]
-        validate_delete_key(conn1, delete_key, fn conn2, validated_delete_key ->
-          query = %{"$set" => %{validated_delete_key => :false}}
-          body = %Dodai.UpdateDedicatedDataEntityRequestBody{data: query}
-          request = Dodai.UpdateDedicatedDataEntityRequest.new(group_id, @collection_name, question_id, root_key, body)
-          %Dodai.UpdateDedicatedDataEntitySuccess{} = Sazabi.G2gClient.send(context, app_id, request)
-          json(conn2, 200, [])
-        end)
+        delete_comment(conn1)
       _ -> json(conn1, 403, [])
     end
+  end
+
+  defp create_answer(%Conn{request: %Request{body: input}, context: context} = conn1) do
+    question_id = conn1.request.path_matches.id
+    %{"app_id" => app_id, "group_id" => group_id, "root_key" => root_key} = MasakiStackoverflow.get_all_env()
+    answer_body = %{"_id" => set_id(), "author" => get_author(), "body" => input["value"], "comments" => [], "visible" => :true}
+    create_key = input["key"]
+    validate_answer_body(conn1, answer_body, fn conn2, validated_answer_body ->
+      validate_create_key(conn2, create_key, fn conn3, validated_create_key ->
+        query = %{"$push" => %{validated_create_key => validated_answer_body}}
+        body = %Dodai.UpdateDedicatedDataEntityRequestBody{data: query}
+        request = Dodai.UpdateDedicatedDataEntityRequest.new(group_id, @collection_name, question_id, root_key, body)
+        %Dodai.UpdateDedicatedDataEntitySuccess{} = Sazabi.G2gClient.send(context, app_id, request)
+        json(conn3, 200, [])
+      end)
+    end)
+  end
+
+  defp create_comment(%Conn{request: %Request{body: input}, context: context} = conn1) do
+    question_id = conn1.request.path_matches.id
+    %{"app_id" => app_id, "group_id" => group_id, "root_key" => root_key} = MasakiStackoverflow.get_all_env()
+    comment_body = %{"_id" => set_id(), "author" => get_author(), "body" => input["value"], "visible" => :true}
+    create_key = input["key"]
+    validate_comment_body(conn1, comment_body, fn conn2, validated_comment_body ->
+      validate_create_key(conn2, create_key, fn conn3, validated_create_key ->
+        query = %{"$push" => %{validated_create_key => validated_comment_body}}
+        body = %Dodai.UpdateDedicatedDataEntityRequestBody{data: query}
+        request = Dodai.UpdateDedicatedDataEntityRequest.new(group_id, @collection_name, question_id, root_key, body)
+        %Dodai.UpdateDedicatedDataEntitySuccess{} = Sazabi.G2gClient.send(context, app_id, request)
+        json(conn3, 200, [])
+      end)
+    end)
+  end
+
+  defp update_title(%Conn{request: %Request{body: input}, context: context} = conn1) do
+    question_id = conn1.request.path_matches.id
+    %{"app_id" => app_id, "group_id" => group_id, "root_key" => root_key} = MasakiStackoverflow.get_all_env()
+    update_key = input["key"]
+    validate_update_key(conn1, update_key, fn conn2, validated_update_key ->
+      query = %{"$set" => %{validated_update_key => input["value"]}}
+      body = %Dodai.UpdateDedicatedDataEntityRequestBody{data: query}
+      request = Dodai.UpdateDedicatedDataEntityRequest.new(group_id, @collection_name, question_id, root_key, body)
+      %Dodai.UpdateDedicatedDataEntitySuccess{} = Sazabi.G2gClient.send(context, app_id, request)
+      json(conn2, 200, [])
+    end)
+  end
+
+  defp update_body(%Conn{request: %Request{body: input}, context: context} = conn1) do
+    question_id = conn1.request.path_matches.id
+    %{"app_id" => app_id, "group_id" => group_id, "root_key" => root_key} = MasakiStackoverflow.get_all_env()
+    update_key = input["key"]
+    validate_update_key(conn1, update_key, fn conn2, validated_update_key ->
+      query = %{"$set" => %{validated_update_key => input["value"]}}
+      body = %Dodai.UpdateDedicatedDataEntityRequestBody{data: query}
+      request = Dodai.UpdateDedicatedDataEntityRequest.new(group_id, @collection_name, question_id, root_key, body)
+      %Dodai.UpdateDedicatedDataEntitySuccess{} = Sazabi.G2gClient.send(context, app_id, request)
+      json(conn2, 200, [])
+    end)
+  end
+
+  defp update_answer(%Conn{request: %Request{body: input}, context: context} = conn1) do
+    question_id = conn1.request.path_matches.id
+    %{"app_id" => app_id, "group_id" => group_id, "root_key" => root_key} = MasakiStackoverflow.get_all_env()
+    update_key = input["key"]
+    validate_update_key(conn1, update_key, fn conn2, validated_update_key ->
+      query = %{"$set" => %{validated_update_key => input["value"]}}
+      body = %Dodai.UpdateDedicatedDataEntityRequestBody{data: query}
+      request = Dodai.UpdateDedicatedDataEntityRequest.new(group_id, @collection_name, question_id, root_key, body)
+      %Dodai.UpdateDedicatedDataEntitySuccess{} = Sazabi.G2gClient.send(context, app_id, request)
+      json(conn2, 200, [])
+    end)
+  end
+
+  defp update_comment(%Conn{request: %Request{body: input}, context: context} = conn1) do
+    question_id = conn1.request.path_matches.id
+    %{"app_id" => app_id, "group_id" => group_id, "root_key" => root_key} = MasakiStackoverflow.get_all_env()
+    update_key = input["key"]
+    validate_update_key(conn1, update_key, fn conn2, validated_update_key ->
+      query = %{"$set" => %{validated_update_key => input["value"]}}
+      body = %Dodai.UpdateDedicatedDataEntityRequestBody{data: query}
+      request = Dodai.UpdateDedicatedDataEntityRequest.new(group_id, @collection_name, question_id, root_key, body)
+      %Dodai.UpdateDedicatedDataEntitySuccess{} = Sazabi.G2gClient.send(context, app_id, request)
+      json(conn2, 200, [])
+    end)
+  end
+
+  defp delete_answer(%Conn{request: %Request{body: input}, context: context} = conn1) do
+    question_id = conn1.request.path_matches.id
+    %{"app_id" => app_id, "group_id" => group_id, "root_key" => root_key} = MasakiStackoverflow.get_all_env()
+    delete_key = input["key"]
+    validate_delete_key(conn1, delete_key, fn conn2, validated_delete_key ->
+      query = %{"$set" => %{validated_delete_key => :false}}
+      body = %Dodai.UpdateDedicatedDataEntityRequestBody{data: query}
+      request = Dodai.UpdateDedicatedDataEntityRequest.new(group_id, @collection_name, question_id, root_key, body)
+      %Dodai.UpdateDedicatedDataEntitySuccess{} = Sazabi.G2gClient.send(context, app_id, request)
+      json(conn2, 200, [])
+    end)
+  end
+
+  defp delete_comment(%Conn{request: %Request{body: input}, context: context} = conn1) do
+    question_id = conn1.request.path_matches.id
+    %{"app_id" => app_id, "group_id" => group_id, "root_key" => root_key} = MasakiStackoverflow.get_all_env()
+    delete_key = input["key"]
+    validate_delete_key(conn1, delete_key, fn conn2, validated_delete_key ->
+      query = %{"$set" => %{validated_delete_key => :false}}
+      body = %Dodai.UpdateDedicatedDataEntityRequestBody{data: query}
+      request = Dodai.UpdateDedicatedDataEntityRequest.new(group_id, @collection_name, question_id, root_key, body)
+      %Dodai.UpdateDedicatedDataEntitySuccess{} = Sazabi.G2gClient.send(context, app_id, request)
+      json(conn2, 200, [])
+    end)
   end
 
   defp validate_create_key(conn, key, func) do
