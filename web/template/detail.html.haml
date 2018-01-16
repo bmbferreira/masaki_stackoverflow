@@ -7,13 +7,13 @@
     = "Question by " <> author
   %div.body
     = body
-  %button{type="button" class="update-button btn btn-primary" data-toggle="modal" data-target="#modal" data-method="put" data-url=""}
+  %button{type="button" class="update-button btn btn-primary" data-toggle="modal" data-target="#modal" data-method="put"    data-url=""}
     = "Edit"
-  %button{type="button" class="create-button btn btn-primary" data-toggle="modal" data-target="#modal" data-method="post" data-url="/answer"}
+  %button{type="button" class="create-button btn btn-primary" data-toggle="modal" data-target="#modal" data-method="post"   data-url="/answer"}
     = "Answer"
-  %button{type="button" class="create-button btn btn-primary" data-toggle="modal" data-target="#modal" data-method="post" data-url="/comment"}
+  %button{type="button" class="create-button btn btn-primary" data-toggle="modal" data-target="#modal" data-method="post"   data-url="/comment"}
     = "Comment"
-  %button{type="button" class="delete-button btn btn-danger" data-toggle="modal" data-target="#modal" data-method="delete" data-url=""}
+  %button{type="button" class="delete-button btn btn-danger"  data-toggle="modal" data-target="#modal" data-method="delete" data-url=""}
     = "Delete"
   - for %{"_id" => comment_id, "owner" => author, "data" => %{"body" => body}} <- comments do
     %div.comment
@@ -21,9 +21,9 @@
         = "Comment by " <> author
       %div.body
         = body
-      %button{type="button" class="update-button btn btn-primary" data-toggle="modal" data-target="#modal" data-method="put"   data-url="/comment/#{comment_id}"}
+      %button{type="button" class="update-button btn btn-primary" data-toggle="modal" data-target="#modal" data-method="put"    data-url="/comment/#{comment_id}"}
         = "Edit"
-      %button{type="button" class="delete-button btn btn-danger" data-toggle="modal" data-target="#modal" data-method="delete" data-url="/comment/#{comment_id}"}
+      %button{type="button" class="delete-button btn btn-danger"  data-toggle="modal" data-target="#modal" data-method="delete" data-url="/comment/#{comment_id}"}
         = "Delete"
 - for %{"_id" => answer_id, "owner" => author, "data" => %{"body" => body, "comments" => comments}} <- answers do
   %div.answer
@@ -31,11 +31,11 @@
       = "Answer by " <> author
     %div.body
       = body
-    %button{type="button" class="update-button btn btn-primary" data-toggle="modal" data-target="#modal" data-method="put"   data-url="/answer/#{answer_id}"}
+    %button{type="button" class="update-button btn btn-primary" data-toggle="modal" data-target="#modal" data-method="put"    data-url="/answer/#{answer_id}"}
       = "Edit"
-    %button{type="button" class="create-button btn btn-primary" data-toggle="modal" data-target="#modal" data-method="post"  data-url="/answer/#{answer_id}/comment"}
+    %button{type="button" class="create-button btn btn-primary" data-toggle="modal" data-target="#modal" data-method="post"   data-url="/answer/#{answer_id}/comment"}
       = "Comment"
-    %button{type="button" class="delete-button btn btn-danger" data-toggle="modal" data-target="#modal" data-method="delete" data-url="/answer/#{answer_id}"}
+    %button{type="button" class="delete-button btn btn-danger"  data-toggle="modal" data-target="#modal" data-method="delete" data-url="/answer/#{answer_id}"}
       = "Delete"
     - for %{"_id" => comment_id, "owner" => author, "data" => %{"body" => body}} <- comments do
       %div.comment
@@ -43,9 +43,9 @@
           = "Comment by " <> author
         %div.body
           = body
-        %button{type="button" class="update-button btn btn-primary" data-toggle="modal" data-target="#modal" data-method="put"   data-url="/answer/#{answer_id}/comment/#{comment_id}"}
+        %button{type="button" class="update-button btn btn-primary" data-toggle="modal" data-target="#modal" data-method="put"    data-url="/answer/#{answer_id}/comment/#{comment_id}"}
           = "Edit"
-        %button{type="button" class="delete-button btn btn-danger" data-toggle="modal" data-target="#modal" data-method="delete" data-url="/answer/#{answer_id}/comment/#{comment_id}"}
+        %button{type="button" class="delete-button btn btn-danger"  data-toggle="modal" data-target="#modal" data-method="delete" data-url="/answer/#{answer_id}/comment/#{comment_id}"}
           = "Delete"
 %form{action="/v1/question/#{question_id}" method=""}
   %div#modal{class="modal fade" tabid="-1"}
@@ -59,9 +59,9 @@
               = "X"
         %div{class="modal-body"}
           %div{class="form-group"}
-            %input#url{   type="hidden" class="form-control" value=""}
-            %input#type{  type="hidden" class="form-control" value=""}
-            %input#value{ type="text"   class="form-control" value="" name="value" rows="10" required}
+            %input#url{  type="hidden" class="form-control" value=""}
+            %input#type{ type="hidden" class="form-control" value=""}
+            %input#value{type="text"   class="form-control" value="" name="value" rows="10" required}
             %div#msg
         %div{class="modal-footer"}
           %button#submit{type="submit" class="submit btn btn-primary"}
@@ -96,9 +96,9 @@
   $('form').submit(function(event) {
     event.preventDefault();
     $.ajax({
-      url: '/v1'+location.pathname+$('#url').val(),
-      type: $('#type').val(),
-      data: $('form').serialize(),
+      url:     '/v1'+location.pathname+$('#url').val(),
+      type:    $('#type').val(),
+      data:    $('form').serialize(),
       timeout: 10000,
       success: function(response){
         if($('#type').val()=='delete' && $('#url').val()==''){

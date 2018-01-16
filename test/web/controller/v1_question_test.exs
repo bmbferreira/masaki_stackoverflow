@@ -1,10 +1,10 @@
 defmodule MasakiStackoverflow.Controller.V1.QuestionTest do
   use SolomonLib.Test.ControllerTestCase
 
-  @create_input         %{"title" => "question-title-1", "body" => "question-body-1"}
+  @create_input          %{"title" => "question-title-1", "body" => "question-body-1"}
   @create_invalid_input [%{"title" => "", "body" => "question-body-1"}, %{"title" => "question-title-1", "body" => ""}]
-  @update_input         %{"value" => "question-body-2"}
-  @update_invalid_input %{"value" => ""}
+  @update_input          %{"value" => "question-body-2"}
+  @update_invalid_input  %{"value" => ""}
   @question_id "question-id-1"
   @create_success %Dodai.CreateDedicatedDataEntitySuccess{
     status_code: 201,

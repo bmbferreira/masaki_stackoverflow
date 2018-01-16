@@ -33,10 +33,10 @@ defmodule MasakiStackoverflow.Controller.V1.AnswerTest do
       "updatedAt" => "2018-01-01T00:00:00+00:00",
       "version"   => 0,
       "data"      => %{
-        "title"    => "title",
-        "body"     => "body",
-        "answers"  => [@answer_id],
-        "comments" => []
+        "title"     => "title",
+        "body"      => "body",
+        "answers"   => [@answer_id],
+        "comments"  => []
       }
     }
   }

@@ -6,9 +6,9 @@ defmodule MasakiStackoverflow.Controller.V1.CommentTest do
   @comment_id  "comment-id-3"
   @create_question_comment_input %{"value" => "comment-body-1", "parent_id" => @question_id, "parent_type" => "question"}
   @create_answer_comment_input   %{"value" => "comment-body-2", "parent_id" => @answer_id,   "parent_type" => "answer"}
-  @create_comment_invalid_input %{"value" => ""}
-  @update_comment_input         %{"value" => "comment-body-3"}
-  @update_comment_invalid_input %{"value" => ""}
+  @create_comment_invalid_input  %{"value" => ""}
+  @update_comment_input          %{"value" => "comment-body-3"}
+  @update_comment_invalid_input  %{"value" => ""}
   @create_question_comment_success %Dodai.CreateDedicatedDataEntitySuccess{
     status_code: 201,
     body: %{
@@ -51,9 +51,9 @@ defmodule MasakiStackoverflow.Controller.V1.CommentTest do
       "updatedAt" => "2018-01-01T00:00:00+00:00",
       "version"   => 0,
       "data"      => %{
-        "body"     => "question-body",
-        "answers" => [],
-        "comments" => [@comment_id]
+        "body"      => "question-body",
+        "answers"   => [],
+        "comments"  => [@comment_id]
       }
     }
   }
@@ -67,9 +67,9 @@ defmodule MasakiStackoverflow.Controller.V1.CommentTest do
       "updatedAt" => "2018-02-01T00:00:00+00:00",
       "version"   => 0,
       "data"      => %{
-        "body"     => "answer-body",
+        "body"      => "answer-body",
         "parent_id" => "question-id",
-        "comments" => [@comment_id]
+        "comments"  => [@comment_id]
       }
     }
   }
@@ -141,7 +141,7 @@ defmodule MasakiStackoverflow.Controller.V1.CommentTest do
 
   test "create should return 403, if invalid values were sent" do
     :meck.expect(Sazabi.G2gClient, :send, fn _, _, _ -> assert false end)
-    assert Req.post_json("/v1/question/#{@question_id}/comment", @create_comment_invalid_input).status == 403
+    assert Req.post_json("/v1/question/#{@question_id}/comment",                      @create_comment_invalid_input).status == 403
     assert Req.post_json("/v1/question/#{@question_id}/answer/#{@answer_id}/comment", @create_comment_invalid_input).status == 403
   end
 
@@ -177,7 +177,7 @@ defmodule MasakiStackoverflow.Controller.V1.CommentTest do
 
   test "update should return 403, if input is invalid" do
     :meck.expect(Sazabi.G2gClient, :send, fn _, _, _ -> assert false end)
-    assert Req.put_json("/v1/question/#{@question_id}/comment/#{@comment_id}", @update_comment_invalid_input).status == 403
+    assert Req.put_json("/v1/question/#{@question_id}/comment/#{@comment_id}",                      @update_comment_invalid_input).status == 403
     assert Req.put_json("/v1/question/#{@question_id}/answer/#{@answer_id}/comment/#{@comment_id}", @update_comment_invalid_input).status == 403
   end
 
