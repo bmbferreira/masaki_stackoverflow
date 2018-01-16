@@ -109,6 +109,6 @@ defmodule MasakiStackoverflow.Controller.V1.AnswerTest do
         %Dodai.UpdateDedicatedDataEntityRequest{} -> @question_without_answer_success
       end
     end)
-    assert Req.delete("/v1/question/#{@question_id}", %{}, []).status == 204
+    assert Req.delete("/v1/question/#{@question_id}/answer/#{@answer_id}", %{}, []).status == 204
   end
 end
