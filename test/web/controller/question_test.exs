@@ -2,7 +2,7 @@ defmodule MasakiStackoverflow.Controller.QuestionTest do
   use SolomonLib.Test.ControllerTestCase
 
   @question_id     "question-id-3"
-  @index_success_res_body %Dodai.RetrieveDedicatedDataEntityListSuccess{
+  @index_success_questions %Dodai.RetrieveDedicatedDataEntityListSuccess{
     status_code: 200,
     body: [
       %{
@@ -109,16 +109,16 @@ defmodule MasakiStackoverflow.Controller.QuestionTest do
 
   test "index should render every item as HTML" do
     :meck.expect(Sazabi.G2gClient, :send, fn _conn, _app_id, %{} ->
-      @index_success_res_body
+      @index_success_questions
     end)
     response = Req.get("/question", %{}, [params: %{"locale" => "ja"}])
     assert response.status == 200
     assert response.headers["content-type"] == "text/html"
-    body = response.body
-    assert String.starts_with?(body, "<!DOCTYPE html>")
-    Enum.each(@index_success_res_body.body, fn %{"data" => data} ->
-      assert String.contains?(body, data["title"])
-      assert String.contains?(body, data["body"])
+    html_body = response.body
+    assert String.starts_with?(html_body, "<!DOCTYPE html>")
+    Enum.each(@index_success_questions.body, fn %{"data" => data} ->
+      assert String.contains?(html_body, data["title"])
+      assert String.contains?(html_body, data["body"])
     end)
   end
 
@@ -135,29 +135,29 @@ defmodule MasakiStackoverflow.Controller.QuestionTest do
     response = Req.get("/question/#{@question_id}", %{}, [params: %{"locale" => "ja"}])
     assert response.status == 200
     assert response.headers["content-type"] == "text/html"
-    body = response.body
-    assert String.starts_with?(body, "<!DOCTYPE html>")
+    html_body = response.body
+    assert String.starts_with?(html_body, "<!DOCTYPE html>")
     Enum.each(@show_success_questions, fn question ->
-      assert String.contains?(body, question.body["owner"])
-      assert String.contains?(body, question.body["data"]["title"])
-      assert String.contains?(body, question.body["data"]["body"])
+      assert String.contains?(html_body, question.body["owner"])
+      assert String.contains?(html_body, question.body["data"]["title"])
+      assert String.contains?(html_body, question.body["data"]["body"])
       Enum.each(question.body["data"]["answers"], fn answer_id ->
         answer = Enum.filter(@show_success_answers, fn answer -> answer.body["_id"] == answer_id end)
         |> Enum.at(0)
-        assert String.contains?(body, answer.body["owner"])
-        assert String.contains?(body, answer.body["data"]["body"])
+        assert String.contains?(html_body, answer.body["owner"])
+        assert String.contains?(html_body, answer.body["data"]["body"])
         Enum.each(answer.body["data"]["comments"], fn comment_id ->
           comment = Enum.filter(@show_success_comments, fn comment -> comment.body["_id"] == comment_id end)
           |> Enum.at(0)
-          assert String.contains?(body, comment.body["owner"])
-          assert String.contains?(body, comment.body["data"]["body"])
+          assert String.contains?(html_body, comment.body["owner"])
+          assert String.contains?(html_body, comment.body["data"]["body"])
         end)
       end)
       Enum.each(question.body["data"]["comments"], fn comment_id ->
         comment = Enum.filter(@show_success_comments, fn comment -> comment.body["_id"] == comment_id end)
         |> Enum.at(0)
-        assert String.contains?(body, comment.body["owner"])
-        assert String.contains?(body, comment.body["data"]["body"])
+        assert String.contains?(html_body, comment.body["owner"])
+        assert String.contains?(html_body, comment.body["data"]["body"])
       end)
     end)
   end

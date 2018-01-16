@@ -8,8 +8,8 @@ defmodule MasakiStackoverflow.Controller.Question do
     # TODO: Pagination into 1000 documents is needed.
     query   = %Dodai.RetrieveDedicatedDataEntityListRequestQuery{query: %{}, sort: %{"createdAt": -1}}
     request =  Dodai.RetrieveDedicatedDataEntityListRequest.new(group_id, @collection_name, root_key, query)
-    %Dodai.RetrieveDedicatedDataEntityListSuccess{body: body} = Sazabi.G2gClient.send(context, app_id, request)
-    render(conn, 200, "question", [questions: body])
+    %Dodai.RetrieveDedicatedDataEntityListSuccess{body: response} = Sazabi.G2gClient.send(context, app_id, request)
+    render(conn, 200, "question", [questions: response])
   end
 
   def show(%Conn{context: context} = conn) do
@@ -34,7 +34,7 @@ defmodule MasakiStackoverflow.Controller.Question do
   defp get_document(context, collection_name, id) do
     %{"app_id" => app_id, "group_id" => group_id, "root_key" => root_key} = MasakiStackoverflow.get_all_env()
     request = Dodai.RetrieveDedicatedDataEntityRequest.new(group_id, collection_name, id, root_key)
-    %Dodai.RetrieveDedicatedDataEntitySuccess{body: body} = Sazabi.G2gClient.send(context, app_id, request)
-    body
+    %Dodai.RetrieveDedicatedDataEntitySuccess{body: response} = Sazabi.G2gClient.send(context, app_id, request)
+    response
   end
 end
