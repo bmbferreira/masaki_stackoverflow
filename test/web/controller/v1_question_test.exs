@@ -80,7 +80,7 @@ defmodule MasakiStackoverflow.Controller.V1.QuestionTest do
 
   test "create should return 403, if invalid values were sent" do
     :meck.expect(Sazabi.G2gClient, :send, fn _, _, _ -> assert false end)
-    @create_invalid_input |> Enum.each(fn input ->
+    Enum.each(@create_invalid_input, fn input ->
       assert Req.post_json("/v1/question/", input).status == 403
     end)
   end

@@ -15,11 +15,11 @@ defmodule MasakiStackoverflow.Controller.Question do
   def show(%Conn{context: context} = conn) do
     question_id = conn.request.path_matches.question_id
     question    = get_document(context, "question", question_id)
-    comments    = question["data"]["comments"] |> Enum.map(fn comment_id -> get_document(context, "comment", comment_id) end)
-    answers     = question["data"]["answers"]  |> Enum.map(fn answer_id ->
+    comments    = Enum.map(question["data"]["comments"], fn comment_id -> get_document(context, "comment", comment_id) end)
+    answers     = Enum.map(question["data"]["answers"] , fn answer_id ->
       answer   = get_document(context, "answer", answer_id)
-      comments = answer["data"]["comments"] |> Enum.map(fn comment_id -> get_document(context, "comment", comment_id) end)
-      answer |> Map.put("data", answer["data"] |> Map.put("comments", comments))
+      comments = Enum.map(answer["data"]["comments"], fn comment_id -> get_document(context, "comment", comment_id) end)
+      Map.put(answer, "data", Map.put(answer["data"], "comments", comments))
     end)
     render(conn, 200, "detail", [
       question_id: question["_id"],

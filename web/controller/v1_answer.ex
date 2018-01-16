@@ -47,7 +47,7 @@ defmodule MasakiStackoverflow.Controller.V1.Answer do
     question_id = conn.request.path_matches.question_id
     answer_id   = conn.request.path_matches.answer_id
     answer      = get_document(context, "answer", answer_id)
-    answer["data"]["comments"] |> Enum.map(fn comment_id -> delete_document(context, "comment", comment_id) end)
+    Enum.map(answer["data"]["comments"], fn comment_id -> delete_document(context, "comment", comment_id) end)
     delete_document(context, "answer", answer_id)
     body    = %Dodai.UpdateDedicatedDataEntityRequestBody{data: %{"$pull" => %{"answers" => answer_id}}}
     request =  Dodai.UpdateDedicatedDataEntityRequest.new(group_id, "question", question_id, root_key, body)

@@ -137,24 +137,24 @@ defmodule MasakiStackoverflow.Controller.QuestionTest do
     assert response.headers["content-type"] == "text/html"
     body = response.body
     assert String.starts_with?(body, "<!DOCTYPE html>")
-    @show_success_questions |> Enum.each(fn question ->
+    Enum.each(@show_success_questions, fn question ->
       assert String.contains?(body, question.body["owner"])
       assert String.contains?(body, question.body["data"]["title"])
       assert String.contains?(body, question.body["data"]["body"])
-      question.body["data"]["answers"] |> Enum.each(fn answer_id ->
-        answer = @show_success_answers |> Enum.filter(fn answer -> answer.body["_id"] == answer_id end)
+      Enum.each(question.body["data"]["answers"], fn answer_id ->
+        answer = Enum.filter(@show_success_answers, fn answer -> answer.body["_id"] == answer_id end)
         |> Enum.at(0)
         assert String.contains?(body, answer.body["owner"])
         assert String.contains?(body, answer.body["data"]["body"])
-        answer.body["data"]["comments"] |> Enum.each(fn comment_id ->
-          comment = @show_success_comments |> Enum.filter(fn comment -> comment.body["_id"] == comment_id end)
+        Enum.each(answer.body["data"]["comments"], fn comment_id ->
+          comment = Enum.filter(@show_success_comments, fn comment -> comment.body["_id"] == comment_id end)
           |> Enum.at(0)
           assert String.contains?(body, comment.body["owner"])
           assert String.contains?(body, comment.body["data"]["body"])
         end)
       end)
-      question.body["data"]["comments"] |> Enum.each(fn comment_id ->
-        comment = @show_success_comments |> Enum.filter(fn comment -> comment.body["_id"] == comment_id end)
+      Enum.each(question.body["data"]["comments"], fn comment_id ->
+        comment = Enum.filter(@show_success_comments, fn comment -> comment.body["_id"] == comment_id end)
         |> Enum.at(0)
         assert String.contains?(body, comment.body["owner"])
         assert String.contains?(body, comment.body["data"]["body"])

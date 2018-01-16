@@ -41,7 +41,8 @@ defmodule MasakiStackoverflow.Controller.V1.Question do
 
   def create(%Conn{request: %Request{body: question_body}, context: context} = conn1) do
     %{"app_id" => app_id, "group_id" => group_id, "root_key" => root_key} = MasakiStackoverflow.get_all_env()
-    question_body = question_body |> Map.put("answers", []) |> Map.put("comments", [])
+    question_body = Map.put(question_body, "answers",  [])
+    question_body = Map.put(question_body, "comments", [])
     validate_question_body(conn1, question_body, fn conn2, validated_question_body ->
       query   = %Dodai.CreateDedicatedDataEntityRequestBody{data: validated_question_body}
       request =  Dodai.CreateDedicatedDataEntityRequest.new(group_id, @collection_name, root_key, query)
@@ -74,10 +75,10 @@ defmodule MasakiStackoverflow.Controller.V1.Question do
   def delete(%Conn{context: context} = conn) do
     question_id = conn.request.path_matches.question_id
     question = get_document(context, "question", question_id)
-    question["data"]["comments"] |> Enum.map(fn comment_id -> delete_document(context, "comment", comment_id) end)
-    question["data"]["answers"]  |> Enum.map(fn answer_id ->
+    Enum.map(question["data"]["comments"], fn comment_id -> delete_document(context, "comment", comment_id) end)
+    Enum.map(question["data"]["answers"],  fn answer_id ->
       answer = get_document(context, "answer", answer_id)
-      answer["data"]["comments"] |> Enum.map(fn comment_id -> delete_document(context, "comment", comment_id) end)
+      Enum.map(answer["data"]["comments"], fn comment_id -> delete_document(context, "comment", comment_id) end)
       delete_document(context, "answer", answer_id)
     end)
     delete_document(context, "question", question_id)
