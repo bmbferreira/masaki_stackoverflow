@@ -1,5 +1,14 @@
 use Croma
 
+defmodule MasakiStackoverflow.CreateCommentBody do
+  use Croma.Struct, fields: [
+    body:        MasakiStackoverflow.NonEmptyString,
+    parent_type: MasakiStackoverflow.NonEmptyString,
+    parent_id:   MasakiStackoverflow.NonEmptyString
+  ],
+  recursive_new?: true
+end
+
 defmodule MasakiStackoverflow.Controller.V1.Comment do
   use SolomonLib.Controller
   alias SolomonLib.Request

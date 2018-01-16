@@ -5,24 +5,6 @@ defmodule MasakiStackoverflow.NonEmptyString do
   use Croma.SubtypeOfString, pattern: ~r/.+/
 end
 
-defmodule MasakiStackoverflow.CreateCommentBody do
-  use Croma.Struct, fields: [
-    body:        MasakiStackoverflow.NonEmptyString,
-    parent_type: MasakiStackoverflow.NonEmptyString,
-    parent_id:   MasakiStackoverflow.NonEmptyString
-  ],
-  recursive_new?: true
-end
-
-defmodule MasakiStackoverflow.CreateAnswerBody do
-  use Croma.Struct, fields: [
-    body:      MasakiStackoverflow.NonEmptyString,
-    parent_id: MasakiStackoverflow.NonEmptyString,
-    comments:  list_of(MasakiStackoverflow.NonEmptyString)
-  ],
-  recursive_new?: true
-end
-
 defmodule MasakiStackoverflow.CreateQuestionBody do
   use Croma.Struct, fields: [
     title:    MasakiStackoverflow.NonEmptyString,

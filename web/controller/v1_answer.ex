@@ -1,4 +1,14 @@
 use Croma
+import Croma.TypeGen
+
+defmodule MasakiStackoverflow.CreateAnswerBody do
+  use Croma.Struct, fields: [
+    body:      MasakiStackoverflow.NonEmptyString,
+    parent_id: MasakiStackoverflow.NonEmptyString,
+    comments:  list_of(MasakiStackoverflow.NonEmptyString)
+  ],
+  recursive_new?: true
+end
 
 defmodule MasakiStackoverflow.Controller.V1.Answer do
   use SolomonLib.Controller
