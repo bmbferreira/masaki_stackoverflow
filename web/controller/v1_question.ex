@@ -53,7 +53,7 @@ defmodule MasakiStackoverflow.Controller.V1.Question do
   defp validate_question_body(conn, params, func) do
     case MasakiStackoverflow.CreateQuestionBody.new(params) do
       {:ok   , validated} -> func.(conn, validated)
-      {:error, _        } -> json(conn, 403, [])
+      {:error, _        } -> json(conn, 403, %{})
     end
   end
 
@@ -61,7 +61,7 @@ defmodule MasakiStackoverflow.Controller.V1.Question do
     question_id = conn.request.path_matches.question_id
     %{"app_id" => app_id, "group_id" => group_id, "root_key" => root_key} = MasakiStackoverflow.get_all_env()
     case input do
-      %{"value" => ""}    ->
+      %{"value" => ""   } ->
         json(conn, 403, %{})
       %{"value" => value} ->
         body = %Dodai.UpdateDedicatedDataEntityRequestBody{data: %{"$set" => %{"body" => value}}}
@@ -77,6 +77,6 @@ defmodule MasakiStackoverflow.Controller.V1.Question do
     query = %Dodai.DeleteDedicatedDataEntityRequestQuery{}
     request = Dodai.DeleteDedicatedDataEntityRequest.new(group_id, @collection_name, question_id, root_key, query)
     %Dodai.DeleteDedicatedDataEntitySuccess{} = Sazabi.G2gClient.send(context, app_id, request)
-    json(conn, 204, [])
+    json(conn, 204, %{})
   end
 end

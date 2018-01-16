@@ -163,16 +163,16 @@ defmodule MasakiStackoverflow.Controller.V1.CommentTest do
   end
 
   test "update should modify contents and return 200" do
-      :meck.expect(Sazabi.G2gClient, :send, fn _conn, _app_id, request ->
-        assert %Dodai.UpdateDedicatedDataEntityRequest{} = request
-        @update_question_comment_success
-      end)
-      assert Req.put_json("/v1/question/#{@question_id}/comment/#{@comment_id}", @update_comment_input).status == 200
-      :meck.expect(Sazabi.G2gClient, :send, fn _conn, _app_id, request ->
-        assert %Dodai.UpdateDedicatedDataEntityRequest{} = request
-        @update_answer_comment_success
-      end)
-      assert Req.put_json("/v1/question/#{@question_id}/answer/#{@answer_id}/comment/#{@comment_id}", @update_comment_input).status == 200
+    :meck.expect(Sazabi.G2gClient, :send, fn _conn, _app_id, request ->
+      assert %Dodai.UpdateDedicatedDataEntityRequest{} = request
+      @update_question_comment_success
+    end)
+    assert Req.put_json("/v1/question/#{@question_id}/comment/#{@comment_id}", @update_comment_input).status == 200
+    :meck.expect(Sazabi.G2gClient, :send, fn _conn, _app_id, request ->
+      assert %Dodai.UpdateDedicatedDataEntityRequest{} = request
+      @update_answer_comment_success
+    end)
+    assert Req.put_json("/v1/question/#{@question_id}/answer/#{@answer_id}/comment/#{@comment_id}", @update_comment_input).status == 200
   end
 
   test "update should return 403, if input is invalid" do
