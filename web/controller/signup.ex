@@ -12,8 +12,7 @@ defmodule MasakiStackoverflow.Controller.Signup do
     res = Sazabi.G2gClient.send(context, app_id, req)
     case res do
       %Dodai.CreateUserSuccess{} ->
-        %Dodai.Model.User{session: session} = Dodai.Model.User.from_response(res)
-        put_resp_cookie(conn, "user_credential", session.key) |> render_page(201, [redirect_path: "/question"])
+        render_page(conn, 201, [email: email])
       %Dodai.ValidationError{} ->
         render_page(conn, 400, [error: "Invalid parameter."])
       %Dodai.AuthenticationIDAlreadyTaken{} ->
