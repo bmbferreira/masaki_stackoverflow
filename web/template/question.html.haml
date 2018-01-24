@@ -1,9 +1,9 @@
 %div
-= "Stack Overflow Clone"
+  = "Stack Overflow Clone"
 %div
   %span
     = "Welcome"
-  - if email
+  - if email do
     %span
       = ", " <> email
 %button{type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal"}
