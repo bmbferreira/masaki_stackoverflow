@@ -13,7 +13,7 @@ defmodule MasakiStackoverflow.Controller.V1.User do
         conn
         |> put_resp_cookie("user_credential", body.session.key)
         |> put_resp_cookie("email", email)
-        |> json(201, [redirect: request.query_params.redirect])
+        |> json(201, [redirect: redirect])
       %{code: code, name: name, description: description} ->
         json(conn, code, [error: name <> ": " <> description, redirect: redirect])
     end
@@ -31,7 +31,7 @@ defmodule MasakiStackoverflow.Controller.V1.User do
         conn
         |> put_resp_cookie("user_credential", body.session.key)
         |> put_resp_cookie("email", email)
-        |> json(200, [redirect: request.query_params.redirect])
+        |> json(200, [redirect: redirect])
       %{code: code, name: name, description: description} ->
         json(conn, code, [error: name <> ": " <> description, redirect: redirect])
     end
@@ -45,7 +45,7 @@ defmodule MasakiStackoverflow.Controller.V1.User do
     res      = Sazabi.G2gClient.send(context, app_id, req)
     case res do
       %Dodai.UserLogoutSuccess{} ->
-        json(conn, 204, [redirect: request.query_params.redirect])
+        json(conn, 204, [redirect: redirect])
       %{code: code, name: name, description: description} ->
         json(conn, code, [error: name <> ": " <> description, redirect: redirect])
     end
