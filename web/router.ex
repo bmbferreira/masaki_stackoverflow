@@ -8,7 +8,8 @@ defmodule MasakiStackoverflow.Router do
   delete  "/v1/user/:id"       , V1.User, :delete
 
   get    "/user",          User,      :index
-  post   "/user",          User,      :create
+  get    "/user/:id",      User,      :show
+  post   "/user/new",      User,      :new
 
   get    "/question",        Question,    :index
   get    "/question/:id",    Question,    :show

@@ -3,7 +3,6 @@ defmodule MasakiStackoverflow.Controller.User do
 
   def index(%SolomonLib.Conn{request: request, context: context} = conn) do
     %{"app_id" => app_id, "group_id" => group_id, "root_key" => root_key} = MasakiStackoverflow.get_all_env()
-    #%{_id: id} = conn.request.path_matches
     query_params = [:query, :sort, :limit, :skip]
     |> Enum.each(fn param -> {param, Map.get(request.query_params, param)} end)
     |> Enum.into(%{})
@@ -12,36 +11,26 @@ defmodule MasakiStackoverflow.Controller.User do
     res   = Sazabi.G2gClient.send(context, app_id, req)
     case res do
       %Dodai.RetrieveUserListSuccess{body: body} ->
-        render_page(conn, 201, [body: body])
-      %Dodai.ValidationError{} ->
-        render_page(conn, 400, [error: "Invalid parameter."])
-      %Dodai.AuthenticationIDAlreadyTaken{} ->
-        render_page(conn, 409, [error: "The given authentication ID is already taken."])
+        render(conn, 200, "users", [body: body])
+      %{code: code, name: name, description: description} ->
+        render(conn, code, "users", error: name <> ": " <> description])
     end
-    render_page(conn, 200, [])
   end
 
-  def create(%SolomonLib.Conn{request: request, context: context} = conn) do
-    %{"email" => email, "password" => password} = request.body
+  def show(%SolomonLib.Conn{request: request, context: context} = conn) do
     %{"app_id" => app_id, "group_id" => group_id, "root_key" => root_key} = MasakiStackoverflow.get_all_env()
-    req_body = %Dodai.CreateUserRequestBody{email: email, password: password}
-    req      = Dodai.CreateUserRequest.new(group_id, root_key, req_body)
-    res      = Sazabi.G2gClient.send(context, app_id, req)
+    %{_id: id} = conn.request.path_matches
+    req   = Dodai.RetrieveUserRequest.new(group_id, id, root_key)
+    res   = Sazabi.G2gClient.send(context, app_id, req)
     case res do
-      %Dodai.CreateUserSuccess{} ->
-        %Dodai.Model.User{session: session} = Dodai.Model.User.from_response(res)
-        conn
-        |> put_resp_cookie("user_credential", session.key)
-        |> put_resp_cookie("email", email)
-        |> render_page(201, [redirect_path: "/question"])
-      %Dodai.ValidationError{} ->
-        render_page(conn, 400, [error: "Invalid parameter."])
-      %Dodai.AuthenticationIDAlreadyTaken{} ->
-        render_page(conn, 409, [error: "The given authentication ID is already taken."])
+      %Dodai.RetrieveUserSuccess{body: body} ->
+        render(conn, 200, "user", [body: body])
+      %{code: code, name: name, description: description} ->
+        render(conn, code, "user", [error: name <> ": " <> description])
     end
   end
 
-  defp render_page(conn, status, params) do
-    render(conn, status, "signup", Keyword.merge([email: nil, error: nil], params))
+  def new(conn) do
+    render(conn, 200, "user_new", [])
   end
 end
