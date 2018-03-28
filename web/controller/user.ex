@@ -1,4 +1,4 @@
-defmodule MasakiStackoverflow.Controller.Signup do
+defmodule MasakiStackoverflow.Controller.User do
   use SolomonLib.Controller
 
   def index(conn) do

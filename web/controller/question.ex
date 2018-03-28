@@ -9,7 +9,6 @@ defmodule MasakiStackoverflow.Controller.Question do
     query   = %Dodai.RetrieveDedicatedDataEntityListRequestQuery{query: %{}, sort: %{"createdAt": -1}}
     request = Dodai.RetrieveDedicatedDataEntityListRequest.new(group_id, @collection_name, root_key, query)
     %Dodai.RetrieveDedicatedDataEntityListSuccess{body: body} = Sazabi.G2gClient.send(context, app_id, request)
-    IO.inspect(conn)
     email = if Map.has_key?(conn.request.cookies, "email") do
       conn.request.cookies["email"]
     else
