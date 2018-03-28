@@ -40,8 +40,7 @@ defmodule MasakiStackoverflow.Controller.V1.User do
   def logout(%SolomonLib.Conn{request: request, context: context} = conn) do
     %{"app_id" => app_id, "group_id" => group_id, "root_key" => root_key} = MasakiStackoverflow.get_all_env()
     redirect = request.query_params.redirect
-    %{_id: id} = request.path_matches
-    req      = Dodai.UserLogoutRequest.new(group_id, id, root_key, req_body)
+    req      = Dodai.UserLogoutRequest.new(group_id, root_key)
     res      = Sazabi.G2gClient.send(context, app_id, req)
     case res do
       %Dodai.UserLogoutSuccess{} ->

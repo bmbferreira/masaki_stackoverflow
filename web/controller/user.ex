@@ -13,13 +13,13 @@ defmodule MasakiStackoverflow.Controller.User do
       %Dodai.RetrieveUserListSuccess{body: body} ->
         render(conn, 200, "users", [body: body])
       %{code: code, name: name, description: description} ->
-        render(conn, code, "users", error: name <> ": " <> description])
+        render(conn, code, "users", [error: name <> ": " <> description])
     end
   end
 
   def show(%SolomonLib.Conn{request: request, context: context} = conn) do
     %{"app_id" => app_id, "group_id" => group_id, "root_key" => root_key} = MasakiStackoverflow.get_all_env()
-    %{_id: id} = conn.request.path_matches
+    %{_id: id} = request.path_matches
     req   = Dodai.RetrieveUserRequest.new(group_id, id, root_key)
     res   = Sazabi.G2gClient.send(context, app_id, req)
     case res do
